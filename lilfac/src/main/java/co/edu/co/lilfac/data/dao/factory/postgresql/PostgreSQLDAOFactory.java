@@ -54,11 +54,10 @@ public class PostgreSQLDAOFactory extends DAOFactory{
 		transaccionIniciada = false;
 	}
 
-	@Override
 	public void abrirConexion() throws LilfacException {
         String url = "jdbc:postgresql://localhost:5432/postgresdoo";
-        String usuario = "postgres";
-        String contrasena = "jose2003112";
+        String usuario = "julianamontoya";
+        String contrasena = "jules123";
 
         try {
             conexion = DriverManager.getConnection(url, usuario, contrasena);

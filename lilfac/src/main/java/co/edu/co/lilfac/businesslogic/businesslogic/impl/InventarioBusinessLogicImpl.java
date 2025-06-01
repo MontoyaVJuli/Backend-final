@@ -7,7 +7,6 @@ import co.edu.co.lilfac.businesslogic.businesslogic.assembler.inventario.entity.
 import co.edu.co.lilfac.businesslogic.businesslogic.domain.InventarioDomain;
 import co.edu.co.lilfac.crosscutting.excepciones.LilfacException;
 import co.edu.co.lilfac.data.dao.factory.DAOFactory;
-import co.edu.co.lilfac.entity.InventarioEntity;
 
 public class InventarioBusinessLogicImpl implements InventarioBusinessLogic {
 	
