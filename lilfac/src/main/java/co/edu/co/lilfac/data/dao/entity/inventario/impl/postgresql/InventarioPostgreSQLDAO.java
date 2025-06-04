@@ -56,7 +56,7 @@ public class InventarioPostgreSQLDAO implements InventarioDAO{
 	}
 
 	@Override
-	public List<InventarioEntity> listByFIlter(InventarioEntity filter) throws LilfacException {
+	public List<InventarioEntity> listByFilter(InventarioEntity filter) throws LilfacException {
 		var listaInventario = new java.util.ArrayList<InventarioEntity>();
 		var sentenciaSQL = new StringBuilder();
 		sentenciaSQL.append("SELECT I.id, I.totalUnidades, I.unidadesAlquiladas, I.unidadesAfectadas, I.UnidadesDisponibles, E.nombre AS nombre_empresa, P.nombre AS nombre_producto, H.costo AS costo FROM inventario I JOIN empresa E ON I.empresa = E.id JOIN producto P ON I.producto = P.id JOIN historialCosto H ON I.historialCosto = H.id WHERE 1=1");

@@ -45,7 +45,7 @@ public class EntregaBusinessLogicImpl implements EntregaBusinessLogic {
 	public List<EntregaDomain> consultarEntregas(EntregaDomain filtro) throws LilfacException {
 		
 		var entregaFilter = EntregaEntityAssembler.getInstance().toEntity(filtro);
-		List<EntregaEntity> entregaEntities = factory.getEntregaDAO().listByFIlter(entregaFilter);
+		List<EntregaEntity> entregaEntities = factory.getEntregaDAO().listByFilter(entregaFilter);
 		return EntregaEntityAssembler.getInstance().toDomain(entregaEntities);
 	}
 

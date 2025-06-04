@@ -49,7 +49,7 @@ public class CostoAdicionalPostgreSQLDAO implements CostoAdicionalDAO{
 	}
 
 	@Override
-	public List<CostoAdicionalEntity> listByFIlter(CostoAdicionalEntity filter) throws LilfacException {
+	public List<CostoAdicionalEntity> listByFilter(CostoAdicionalEntity filter) throws LilfacException {
 		var listaCostosAdicionales = new java.util.ArrayList<CostoAdicionalEntity>();
 		var sentenciaSQL = new StringBuilder();
 		sentenciaSQL.append("SELECT CA.id, CA.valor, CA.descripcion, R.id AS recepcion FROM costoAdicional CA JOIN recepcion R ON CA.recepcion = R.id WHERE 1=1");

@@ -45,7 +45,7 @@ public class PedidoBusinessLogicImpl implements PedidoBusinessLogic {
 	public List<PedidoDomain> consultarPedidos(PedidoDomain filtro) throws LilfacException {
 		
 		var pedidoFilter = PedidoEntityAssembler.getInstance().toEntity(filtro);
-		List<PedidoEntity> pedidoEntities = factory.getPedidoDAO().listByFIlter(pedidoFilter);
+		List<PedidoEntity> pedidoEntities = factory.getPedidoDAO().listByFilter(pedidoFilter);
 		return PedidoEntityAssembler.getInstance().toDomain(pedidoEntities);
 		
 	}

@@ -10,8 +10,9 @@ import co.edu.co.lilfac.crosscutting.excepciones.DataLilfacException;
 import co.edu.co.lilfac.crosscutting.excepciones.LilfacException;
 import co.edu.co.lilfac.crosscutting.utilitarios.UtilUUID;
 import co.edu.co.lilfac.data.dao.entity.cliente.ClienteDAO;
-import co.edu.co.lilfac.entity.CiudadEntity;
 import co.edu.co.lilfac.entity.ClienteEntity;
+import co.edu.co.lilfac.entity.CiudadEntity;
+
 
 public class ClientePostgreSQLDAO implements ClienteDAO{
 	
@@ -37,7 +38,7 @@ public class ClientePostgreSQLDAO implements ClienteDAO{
 	    }
 	}
 
-	@Override
+	
 	public void create(ClienteEntity entity) throws LilfacException {
 		var sentenciaSQL = new StringBuilder();
 		
@@ -55,6 +56,7 @@ public class ClientePostgreSQLDAO implements ClienteDAO{
 			sentenciaPreparada.setString(6,  entity.getCorreo());
 			sentenciaPreparada.setString(7,  entity.getDireccionResidencia());
 			sentenciaPreparada.setObject(8,  ciudad);
+			
 			sentenciaPreparada.executeUpdate();
 			
 		} catch (SQLException exception) {
@@ -71,11 +73,12 @@ public class ClientePostgreSQLDAO implements ClienteDAO{
 		
 	}
 
-	@Override
-	public List<ClienteEntity> listByFIlter(ClienteEntity filter) throws LilfacException {
+	
+	public List<ClienteEntity> listByFilter(ClienteEntity filter) throws LilfacException {
 		var listaClientes = new java.util.ArrayList<ClienteEntity>();
 		var sentenciaSQL = new StringBuilder();
-		sentenciaSQL.append("SELECT CL.id, CL.nombre, CL.apellido, CL.cedula, CL.telefono, CL.correo, CL.direccionresidencia, C.nombre AS nombre_ciudad FROM cliente CL JOIN ciudad C ON CL.ciudad = C.id WHERE 1=1");
+		sentenciaSQL.append("SELECT CL.id, CL.nombre, CL.apellido, CL.cedula, CL.telefono, CL.correo,"
+				+ " CL.direccionresidencia, C.nombre AS nombre_ciudad FROM cliente CL JOIN ciudad C ON CL.ciudad = C.id WHERE 1=1");
 		
 		if (filter != null) {
 			if (filter.getId() != null) {
@@ -171,7 +174,7 @@ public class ClientePostgreSQLDAO implements ClienteDAO{
 		return listaClientes;
 	}
 
-	@Override
+	
 	public List<ClienteEntity> listAll() throws LilfacException {
 	    List<ClienteEntity> listaClientes = new ArrayList<>();
 	    var sentenciaSQL = new StringBuilder();
@@ -211,7 +214,7 @@ public class ClientePostgreSQLDAO implements ClienteDAO{
 	    return listaClientes;
 	}
 
-	@Override
+	
 	public ClienteEntity listById(UUID id) throws LilfacException {
 		var clienteEntityRetorno=new ClienteEntity();
 		var sentenciaSQL = new StringBuilder();
@@ -254,7 +257,7 @@ public class ClientePostgreSQLDAO implements ClienteDAO{
 		return clienteEntityRetorno;
 	}
 
-	@Override
+	
 	public void update(UUID id, ClienteEntity entity) throws LilfacException {
 		var sentenciaSQL = new StringBuilder();
 		
@@ -286,7 +289,7 @@ public class ClientePostgreSQLDAO implements ClienteDAO{
 		
 	}
 
-	@Override
+	
 	public void delete(UUID id) throws LilfacException {
 		var sentenciaSQL = new StringBuilder();
 		

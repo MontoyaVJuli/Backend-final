@@ -51,7 +51,7 @@ public class ProductoPostgreSQLDAO implements ProductoDAO{
 	}
 
 	@Override
-	public List<ProductoEntity> listByFIlter(ProductoEntity filter) throws LilfacException {
+	public List<ProductoEntity> listByFilter(ProductoEntity filter) throws LilfacException {
 		var listaProductos = new java.util.ArrayList<ProductoEntity>();
 		var sentenciaSQL = new StringBuilder();
 		sentenciaSQL.append("SELECT id, nombre, codigo, caracteristicas, estado FROM producto WHERE 1=1");

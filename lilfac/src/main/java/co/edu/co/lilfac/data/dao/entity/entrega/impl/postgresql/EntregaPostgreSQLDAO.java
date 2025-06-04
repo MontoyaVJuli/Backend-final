@@ -55,7 +55,7 @@ public class EntregaPostgreSQLDAO implements EntregaDAO{
 	}
 
 	@Override
-	public List<EntregaEntity> listByFIlter(EntregaEntity filter) throws LilfacException {
+	public List<EntregaEntity> listByFilter(EntregaEntity filter) throws LilfacException {
 		var listaEntregas = new java.util.ArrayList<EntregaEntity>();
 		var sentenciaSQL = new StringBuilder();
 		sentenciaSQL.append("SELECT E.id, E.fecha, E.estado, E.direccion, C.nombre AS nombre_ciudad, EM.nombre AS nombre_empleado, P.id AS pedido FROM entrega E JOIN ciudad C ON E.ciudad = C.id JOIN empleado EM ON E.empleado = EM.id JOIN pedido P ON E.pedido = P.id WHERE 1=1");

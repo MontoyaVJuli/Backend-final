@@ -2,7 +2,6 @@ package co.edu.co.lilfac.businesslogic.businesslogic.domain;
 
 import java.util.UUID;
 
-import co.edu.co.lilfac.crosscutting.utilitarios.UtilNumerico;
 import co.edu.co.lilfac.crosscutting.utilitarios.UtilObjeto;
 import co.edu.co.lilfac.crosscutting.utilitarios.UtilTexto;
 import co.edu.co.lilfac.crosscutting.utilitarios.UtilUUID;
@@ -11,26 +10,36 @@ public class EmpleadoDomain {
 	private UUID id;
 	private String nombre;
 	private String apellido;
-	private Integer cedula;
-	private Integer telefono;
+	private String cedula;
+	private String telefono;
 	private String correo;
+	private String direccionResidencia;
+	private CiudadDomain ciudad;
+	private EmpresaDomain empresa;
 	
 	EmpleadoDomain () {
 		setId(UtilUUID.obtenerValorDefecto());
 		setNombre(UtilTexto.getInstance().obtenerValorDefecto());
 		setApellido(UtilTexto.getInstance().obtenerValorDefecto());
-		setCedula(UtilNumerico.getInstance().obtenerValorDefecto());
-		setTelefono(UtilNumerico.getInstance().obtenerValorDefecto());
+		setCedula(UtilTexto.getInstance().obtenerValorDefecto());
+		setTelefono(UtilTexto.getInstance().obtenerValorDefecto());
 		setCorreo(UtilTexto.getInstance().obtenerValorDefecto());
+		setDireccionResidencia(UtilTexto.getInstance().obtenerValorDefecto());
+		setCiudad(CiudadDomain.obtenerValorDefecto());
+		setEmpresa(EmpresaDomain.obtenerValorDefecto());
 	}
 	
-	public EmpleadoDomain (final UUID id, final String nombre, final String apellido, final Integer cedula, final Integer telefono, final String correo) {
+	public EmpleadoDomain (final UUID id, final String nombre, final String apellido, final String cedula, final String telefono,
+						   final String correo, final String direccionResidencia, final CiudadDomain ciudad, final EmpresaDomain empresa) {
 		setId(id);
 		setNombre(nombre);
 		setApellido(apellido);
 		setCedula(cedula);
 		setTelefono(telefono);
 		setCorreo(correo);
+		setDireccionResidencia(direccionResidencia);
+		setCiudad(ciudad);
+		setEmpresa(empresa);
 		
 	}
 	
@@ -66,28 +75,53 @@ public class EmpleadoDomain {
 		this.apellido = UtilTexto.getInstance().quitarEspaciosBlancoInicioFin(apellido);
 	}
 
-	public Integer getCedula() {
+	public String getCedula() {
 		return cedula;
 	}
 
-	private void setCedula(final Integer cedula) {
-		this.cedula = UtilNumerico.obtenerValorDefecto(cedula);
+	private void setCedula(final String cedula) {
+		this.cedula = UtilTexto.getInstance().quitarEspaciosBlancoInicioFin(cedula);
 	}
 
-	public Integer getTelefono() {
+	public String getTelefono() {
 		return telefono;
 	}
 
-	private void setTelefono(final Integer telefono) {
-		this.telefono = UtilNumerico.obtenerValorDefecto(telefono);
+	private void setTelefono(final String telefono) {
+		this.telefono = UtilTexto.getInstance().quitarEspaciosBlancoInicioFin(telefono);
 	}
 
+	
 	public String getCorreo() {
 		return correo;
 	}
 
 	private void setCorreo(final String correo) {
 		this.correo = correo;
+	}
+	
+	public String getDireccionResidencia() {
+		return direccionResidencia;
+	}
+
+	private void setDireccionResidencia(String direccionResidencia) {
+		this.direccionResidencia = UtilTexto.getInstance().quitarEspaciosBlancoInicioFin(direccionResidencia);
+	}
+
+	public CiudadDomain getCiudad() {
+		return ciudad;
+	}
+
+	private void setCiudad(CiudadDomain ciudad) {
+		this.ciudad = CiudadDomain.obtenerValorDefecto(ciudad);
+	}
+	
+	public EmpresaDomain getEmpresa() {
+		return empresa;
+	}
+
+	private void setEmpresa(EmpresaDomain empresa) {
+		this.empresa = EmpresaDomain.obtenerValorDefecto(empresa);
 	}
 
 }

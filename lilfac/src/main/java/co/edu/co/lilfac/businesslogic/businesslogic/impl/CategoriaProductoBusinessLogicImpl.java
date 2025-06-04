@@ -45,7 +45,7 @@ public class CategoriaProductoBusinessLogicImpl implements CategoriaProductoBusi
 	public List<CategoriaProductoDomain> consultarCategoriasProducto(CategoriaProductoDomain filtro) throws LilfacException {
 		
 		var categoriaProductoFilter = CategoriaProductoEntityAssembler.getInstance().toEntity(filtro);
-		List<CategoriaProductoEntity> categoriaProductoEntities = factory.getCategoriaProductoDAO().listByFIlter(categoriaProductoFilter);
+		List<CategoriaProductoEntity> categoriaProductoEntities = factory.getCategoriaProductoDAO().listByFilter(categoriaProductoFilter);
 		return CategoriaProductoEntityAssembler.getInstance().toDomain(categoriaProductoEntities);
 	}
 

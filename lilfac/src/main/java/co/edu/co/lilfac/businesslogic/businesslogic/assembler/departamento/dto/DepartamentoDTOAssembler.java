@@ -46,7 +46,7 @@ public class DepartamentoDTOAssembler implements DTOAssembler<DepartamentoDTO, D
 		for (DepartamentoDomain departamentoDomain : domainList) {
 			listaResultado.add(toDto(departamentoDomain));
 		}
-		return null;
+		return listaResultado;
 	}
 
 

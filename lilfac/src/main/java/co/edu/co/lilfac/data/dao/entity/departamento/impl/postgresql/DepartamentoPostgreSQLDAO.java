@@ -8,6 +8,8 @@ import java.util.UUID;
 
 import co.edu.co.lilfac.crosscutting.excepciones.DataLilfacException;
 import co.edu.co.lilfac.crosscutting.excepciones.LilfacException;
+import co.edu.co.lilfac.crosscutting.utilitarios.UtilObjeto;
+import co.edu.co.lilfac.crosscutting.utilitarios.UtilTexto;
 import co.edu.co.lilfac.crosscutting.utilitarios.UtilUUID;
 import co.edu.co.lilfac.data.dao.entity.departamento.DepartamentoDAO;
 import co.edu.co.lilfac.entity.DepartamentoEntity;
@@ -21,7 +23,7 @@ public class DepartamentoPostgreSQLDAO implements DepartamentoDAO{
 		this.conexion=conexion;
 	}
 
-	@Override
+	
 	public void create(DepartamentoEntity entity) throws LilfacException {
 		var sentenciaSQL = new StringBuilder();
 		
@@ -32,6 +34,7 @@ public class DepartamentoPostgreSQLDAO implements DepartamentoDAO{
 			sentenciaPreparada.setObject(1, entity.getId());
 			sentenciaPreparada.setString(2, entity.getNombre());
 			sentenciaPreparada.setObject(3, entity.getPais().getId());
+			
 			sentenciaPreparada.executeUpdate();
 			
 		} catch (SQLException exception) {
@@ -48,77 +51,76 @@ public class DepartamentoPostgreSQLDAO implements DepartamentoDAO{
 		
 	}
 
-	@Override
-	public List<DepartamentoEntity> listByFIlter(DepartamentoEntity filter) throws LilfacException {
+	
+	public List<DepartamentoEntity> listByFilter(DepartamentoEntity filter) throws LilfacException {
 		var listaDepartamentos = new java.util.ArrayList<DepartamentoEntity>();
 		var sentenciaSQL = new StringBuilder();
-		sentenciaSQL.append("SELECT D.id, D.nombre, P.nombre AS nombre_pais FROM departamento D JOIN pais P ON D.pais = P.id WHERE 1=1");
+		sentenciaSQL.append("SELECT d.id, d.nombre, p.id AS pais_id FROM departamento d  ")
+				    .append("INNER JOIN pais p ON d.pais = p.id ")
+				    .append("WHERE 1=1 ");
 		
-		if (filter != null) {
-			if (filter.getId() != null) {
-				sentenciaSQL.append(" AND D.id = ?");
-			}
-			if (filter.getNombre() != null && !filter.getNombre().isBlank()) {
-				sentenciaSQL.append(" AND D.nombre LIKE ?");
-			}
-			if (filter.getPais() != null) {
-				sentenciaSQL.append(" AND P.nombre = ?");
-			}
-		}
-		
-		try (var sentenciaPreparada = conexion.prepareStatement(sentenciaSQL.toString())) {
-			
-			var indiceParametro = 1;
-			
-			if (filter != null) {
-				if (filter.getId() != null) {
-					sentenciaPreparada.setObject(indiceParametro++, filter.getId());
-				}
-				if (filter.getNombre() != null && !filter.getNombre().isBlank()) {
-					sentenciaPreparada.setString(indiceParametro++, "%" + filter.getNombre() + "%");
-				}
-				if (filter.getPais() != null) {
-					sentenciaPreparada.setObject(indiceParametro++, filter.getPais().getNombre());
-				}
-			}
-			
-			try (var cursorResultados = sentenciaPreparada.executeQuery()) {
-				
-				while (cursorResultados.next()) {
-					var departamento = new DepartamentoEntity();
-					departamento.setId(UtilUUID.convertirAUUID(cursorResultados.getString("id")));
-					departamento.setNombre(cursorResultados.getString("nombre"));
-					
-					var pais = new PaisEntity();
-		            pais.setNombre(cursorResultados.getString("nombre_pais"));
-		            departamento.setPais(pais);
-					
-					listaDepartamentos.add(departamento);
-				}
-			}
-			
-		} catch (SQLException exception) {
-			var mensajeUsuario = "Se ha presentado un problema tratando de consultar los departamentos con los filtros deseados.";
-			var mensajeTecnico = "Se presentó una excepción SQLException ejecutando SELECT con filtros en la tabla Departamento.";
+		 var parametros = new ArrayList<Object>();
 
-			throw DataLilfacException.reportar(mensajeUsuario, mensajeTecnico, exception);
-			
-		} catch (Exception exception) {
-			var mensajeUsuario = "Se ha presentado un problema inesperado tratando de consultar los departamentos con los filtros deseados.";
-			var mensajeTecnico = "Se presentó una excepción NO CONTROLADA ejecutando SELECT con filtros en la tabla Departamento.";
+		 if (!UtilObjeto.getInstance().esNulo(filter)) {
 
-			throw DataLilfacException.reportar(mensajeUsuario, mensajeTecnico, exception);
-		}
-		
+		        if (!UtilObjeto.getInstance().esNulo(filter.getId()) && !UtilUUID.esValorDefecto(filter.getId())) {
+		            sentenciaSQL.append("AND d.id = ? ");
+		            parametros.add(filter.getId());
+		        }
+	
+		        if (!UtilTexto.getInstance().estaVacia(filter.getNombre())) {
+		            sentenciaSQL.append("AND d.nombre ILIKE ? ");
+		            parametros.add("%" + filter.getNombre().trim() + "%");
+		        }
+		        
+		        if (!UtilObjeto.getInstance().esNulo(filter.getPais()) && !UtilUUID.esValorDefecto(filter.getPais().getId())) {
+		            sentenciaSQL.append("AND d.pais = ? ");
+		            parametros.add(filter.getPais().getId());
+		        }
+			
+		        try (var sentenciaPreparada = conexion.prepareStatement(sentenciaSQL.toString())) {
+		            for (int i = 0; i < parametros.size(); i++) {
+		                sentenciaPreparada.setObject(i + 1, parametros.get(i));
+		            }
+	
+		            try (var cursor = sentenciaPreparada.executeQuery()) {
+		                while (cursor.next()) {
+		                    var departamento = new DepartamentoEntity();
+		                    departamento.setId(UtilUUID.convertirAUUID(cursor.getString("id")));
+		                    departamento.setNombre(cursor.getString("nombre"));
+		                    
+		                    var pais = new PaisEntity();
+		                    pais.setId(UtilUUID.convertirAUUID(cursor.getString("pais_id")));
+		                    departamento.setPais(pais);
+		                    
+		                    listaDepartamentos.add(departamento);	                    
+		                }	                  
+		            }
+		            
+		        } catch (SQLException exception) {
+		            throw DataLilfacException.reportar(
+		                    "Se ha presentado un problema consultando empleados con filtro.",
+		                    "SQLException ejecutando SELECT en Empleado con filtros.",
+		                    exception
+		            );
+		        } catch (Exception exception) {
+		            throw DataLilfacException.reportar(
+		                    "Se ha presentado un problema inesperado consultando empleados.",
+		                    "Excepción no controlada ejecutando SELECT en Empleado con filtros.",
+		                    exception
+		            );
+		        }
+		 }  
+	            
 		return listaDepartamentos;
 	}
 
-	@Override
+	
 	public List<DepartamentoEntity> listAll() throws LilfacException {
 	    List<DepartamentoEntity> listaDepartamentos = new ArrayList<>();
 	    var sentenciaSQL = new StringBuilder();
 
-	    sentenciaSQL.append("SELECT D.id, D.nombre, P.nombre AS nombre_pais FROM departamento D JOIN pais P ON D.pais = P.id");
+	    sentenciaSQL.append("SELECT D.id, D.nombre, P.id AS pais_id FROM departamento D JOIN pais P ON D.pais = P.id");
 
 	    try (var sentenciaPreparada = conexion.prepareStatement(sentenciaSQL.toString());
 	         var resultados = sentenciaPreparada.executeQuery()) {
@@ -129,7 +131,7 @@ public class DepartamentoPostgreSQLDAO implements DepartamentoDAO{
 	            departamento.setNombre(resultados.getString("nombre"));
 
 	            var pais = new PaisEntity();
-	            pais.setNombre(resultados.getString("nombre_pais"));
+                pais.setId(UtilUUID.convertirAUUID(resultados.getString("pais_id")));
 	            departamento.setPais(pais);
 
 	            listaDepartamentos.add(departamento);
@@ -139,6 +141,7 @@ public class DepartamentoPostgreSQLDAO implements DepartamentoDAO{
 	        var mensajeUsuario = "Se ha presentado un problema tratando de consultar la información de los departamentos";
 	        var mensajeTecnico = "Se presentó una excepción de tipo SQLexception tratando de hacer un SELECT en la tabla Departamento";
 	        throw DataLilfacException.reportar(mensajeUsuario, mensajeTecnico, exception);
+	        
 	    } catch (Exception exception) {
 	        var mensajeUsuario = "Se ha presentado un problema INESPERADO tratando de consultar la información de los departamentos";
 	        var mensajeTecnico = "Excepción NO CONTROLADA al hacer SELECT en la tabla Departamento";
@@ -148,12 +151,12 @@ public class DepartamentoPostgreSQLDAO implements DepartamentoDAO{
 	    return listaDepartamentos;
 	}
 
-	@Override
+	
 	public DepartamentoEntity listById(UUID id) throws LilfacException {
 		var departamentoEntityRetorno=new DepartamentoEntity();
 		var sentenciaSQL = new StringBuilder();
 		
-		sentenciaSQL.append("SELECT D.id, D.nombre, P.nombre AS nombre_pais FROM departamento D JOIN pais P ON D.pais = P.id WHERE D.id = ?");
+		sentenciaSQL.append("SELECT D.id, D.nombre, P.id AS pais_id FROM departamento D JOIN pais P ON D.pais = P.id WHERE D.id = ?");
 		
 		try(var sentenciaPreparada = conexion.prepareStatement(sentenciaSQL.toString())){
 			
@@ -165,7 +168,7 @@ public class DepartamentoPostgreSQLDAO implements DepartamentoDAO{
 					departamentoEntityRetorno.setId(UtilUUID.convertirAUUID(cursorResultados.getString("id")));
 					departamentoEntityRetorno.setNombre(cursorResultados.getString("nombre"));
 					var pais = new PaisEntity();
-					pais.setNombre(cursorResultados.getString("nombre_pais"));
+	                pais.setId(UtilUUID.convertirAUUID(cursorResultados.getString("pais_id")));
 					departamentoEntityRetorno.setPais(pais);
 				}
 				
@@ -186,7 +189,7 @@ public class DepartamentoPostgreSQLDAO implements DepartamentoDAO{
 		return departamentoEntityRetorno;
 	}
 
-	@Override
+	
 	public void update(UUID id, DepartamentoEntity entity) throws LilfacException {
 		var sentenciaSQL = new StringBuilder();
 		
@@ -213,7 +216,7 @@ public class DepartamentoPostgreSQLDAO implements DepartamentoDAO{
 		
 	}
 
-	@Override
+	
 	public void delete(UUID id) throws LilfacException {
 		var sentenciaSQL = new StringBuilder();
 		

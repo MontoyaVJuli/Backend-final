@@ -24,94 +24,115 @@ public class ClienteFacadeImpl implements ClienteFacade{
 		clienteBusinessLogic = new ClienteBusinessLogicImpl(daoFactory);
 	} 
 	
-	@Override
+	
 	public void registrarNuevoCliente(ClienteDTO cliente) throws LilfacException {
+		
 		try {
 			daoFactory.abrirConexion();
 			daoFactory.iniciarTransaccion();
 			ClienteDomain clienteDomain = ClienteDTOAssembler.getInstance().toDomain(cliente);
 			clienteBusinessLogic.registrarNuevoCliente(clienteDomain);
 			daoFactory.confirmarTransaccion();
+		
 		} catch (LilfacException exception) {
 			daoFactory.cancelarTransaccion();
 			throw exception;
+		
 		} catch (Exception exception) {
 			var mensajeUsuario="Se ha presentado un problema INESPERADO tratando de registrar la información de un nuevo cliente";
 			var mensajeTecnico="Se presentó una excepción NO CONTROLADA de tipo Exception tratando de registrar la información de un nuevo cliente";
 			
 			throw BusinessLogicLilfacException.reportar(mensajeUsuario, mensajeTecnico, exception);
+		
 		}finally {
 			daoFactory.cerrarConexion();
 		}
 	}
 
-	@Override
+	
 	public void modificarClienteExistente(UUID id, ClienteDTO cliente) throws LilfacException {
+		
 		try {
+			daoFactory.abrirConexion();
 			daoFactory.iniciarTransaccion();
 			ClienteDomain clienteDomain = ClienteDTOAssembler.getInstance().toDomain(cliente);
 			clienteBusinessLogic.modificarClienteExistente(id, clienteDomain);
 			daoFactory.confirmarTransaccion();
+		
 		} catch (LilfacException exception) {
 			daoFactory.cancelarTransaccion();
 			throw exception;
+		
 		} catch (Exception exception) {
 			var mensajeUsuario="Se ha presentado un problema INESPERADO tratando de modificar la información de el cliente con el identificador ingresado";
 			var mensajeTecnico="Se presentó una excepción NO CONTROLADA de tipo Exception tratando de modificar la información de el cliente con el identificador ingresado";
 			
 			throw BusinessLogicLilfacException.reportar(mensajeUsuario, mensajeTecnico, exception);
+		
 		}finally {
 			daoFactory.cerrarConexion();
 		}
 	}
 
-	@Override
+	
 	public void darBajaDefinitivamenteClienteExistente(UUID id) throws LilfacException {
+		
 		try {
+			daoFactory.abrirConexion();
 			daoFactory.iniciarTransaccion();
 			clienteBusinessLogic.darBajaDefinitivamenteClienteExistente(id);
 			daoFactory.confirmarTransaccion();
+		
 		} catch (LilfacException exception) {
 			daoFactory.cancelarTransaccion();
 			throw exception;
+		
 		} catch (Exception exception) {
 			var mensajeUsuario="Se ha presentado un problema INESPERADO tratando de borrar la información de el cliente con el identificador ingresado";
 			var mensajeTecnico="Se presentó una excepción NO CONTROLADA de tipo Exception tratando de borrar la información de el cliente con el identificador ingresado";
 			
 			throw BusinessLogicLilfacException.reportar(mensajeUsuario, mensajeTecnico, exception);
+		
 		}finally {
 			daoFactory.cerrarConexion();
 		}
 	}
 
-	@Override
+	
 	public ClienteDTO consultarClientePorId(UUID id) throws LilfacException {
+		
 		try {
 			var clienteDomainResultado = clienteBusinessLogic.consultarClientePorId(id);
 			return ClienteDTOAssembler.getInstance().toDto(clienteDomainResultado);
+		
 		} catch (LilfacException exception) {
 			daoFactory.cancelarTransaccion();
 			throw exception;
+		
 		} catch (Exception exception) {
 			var mensajeUsuario="Se ha presentado un problema INESPERADO tratando de consultar la información de un cliente con el id deseado";
 			var mensajeTecnico="Se presentó una excepción NO CONTROLADA de tipo Exception tratando de consultar la informacion de un cliente con el id ingresado";
 			
 			throw BusinessLogicLilfacException.reportar(mensajeUsuario, mensajeTecnico, exception);
+		
 		}finally {
 			daoFactory.cerrarConexion();
 		}
 		
 	}
 
-	@Override
+	
 	public List<ClienteDTO> consultarClientes(ClienteDTO filtro) throws LilfacException {
+		
 		try {
 			var clienteFilter = ClienteDTOAssembler.getInstance().toDomain(filtro);
 			List<ClienteDomain> clientesDomain = clienteBusinessLogic.consultarClientes(clienteFilter);
 			return ClienteDTOAssembler.getInstance().toDto(clientesDomain);
+		
 		} catch (LilfacException exception) {
 			daoFactory.cancelarTransaccion();
 			throw exception;
+		
 		} catch (Exception exception) {
 			var mensajeUsuario="Se ha presentado un problema INESPERADO tratando de consultar la información de los clientes";
 			var mensajeTecnico="Se presentó una excepción NO CONTROLADA de tipo Exception tratando de consultar la informacion de los clientes";

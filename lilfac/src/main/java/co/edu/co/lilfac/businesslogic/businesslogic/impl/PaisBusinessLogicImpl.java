@@ -45,7 +45,7 @@ public class PaisBusinessLogicImpl implements PaisBusinessLogic {
 	public List<PaisDomain> consultarPaises(PaisDomain filtro) throws LilfacException {
 
 		var paisFilter = PaisEntityAssembler.getInstance().toEntity(filtro);
-		List<PaisEntity> paisEntities = factory.getPaisDAO().listByFIlter(paisFilter);
+		List<PaisEntity> paisEntities = factory.getPaisDAO().listByFilter(paisFilter);
 		return PaisEntityAssembler.getInstance().toDomain(paisEntities);
 		
 	}

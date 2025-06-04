@@ -2,7 +2,6 @@ package co.edu.co.lilfac.businesslogic.businesslogic.domain;
 
 import java.util.UUID;
 
-import co.edu.co.lilfac.crosscutting.utilitarios.UtilNumerico;
 import co.edu.co.lilfac.crosscutting.utilitarios.UtilObjeto;
 import co.edu.co.lilfac.crosscutting.utilitarios.UtilTexto;
 import co.edu.co.lilfac.crosscutting.utilitarios.UtilUUID;
@@ -10,8 +9,8 @@ import co.edu.co.lilfac.crosscutting.utilitarios.UtilUUID;
 public final class EmpresaDomain {
 	private UUID id;
 	private String nombre;
-	private Integer nit;
-	private Integer telefono;
+	private String nit;
+	private String telefono;
 	private String correo;
 	private String direccion;
 	private CiudadDomain ciudad;
@@ -19,13 +18,13 @@ public final class EmpresaDomain {
 	EmpresaDomain () {
 		setId(UtilUUID.obtenerValorDefecto());
 		setNombre(UtilTexto.getInstance().obtenerValorDefecto());
-		setNit(UtilNumerico.getInstance().obtenerValorDefecto());
-		setTelefono(UtilNumerico.getInstance().obtenerValorDefecto());
+		setNit(UtilTexto.getInstance().obtenerValorDefecto());
+		setTelefono(UtilTexto.getInstance().obtenerValorDefecto());
 		setCorreo(UtilTexto.getInstance().obtenerValorDefecto());
 		setCiudad(CiudadDomain.obtenerValorDefecto());
 	}
 	
-	public EmpresaDomain (final UUID id, final String nombre, final Integer nit, final Integer telefono, final String correo, final String direccion, final CiudadDomain ciudad) {
+	public EmpresaDomain (final UUID id, final String nombre, final String nit, final String telefono, final String correo, final String direccion, final CiudadDomain ciudad) {
 		setId(id);
 		setNombre(nombre);
 		setNit(nit);		
@@ -59,20 +58,20 @@ public final class EmpresaDomain {
 		this.nombre = UtilTexto.getInstance().quitarEspaciosBlancoInicioFin(nombre);
 	}
 
-	public Integer getNit() {
+	public String getNit() {
 		return nit;
 	}
 
-	private void setNit(final Integer nit) {
-		this.nit = UtilNumerico.obtenerValorDefecto(nit);
+	private void setNit(final String nit) {
+		this.nit = UtilTexto.getInstance().quitarEspaciosBlancoInicioFin(nit);
 	}
 
-	public Integer getTelefono() {
+	public String getTelefono() {
 		return telefono;
 	}
 
-	private void setTelefono(final Integer telefono) {
-		this.telefono =UtilNumerico.obtenerValorDefecto(telefono);
+	private void setTelefono(final String telefono) {
+		this.telefono =UtilTexto.getInstance().quitarEspaciosBlancoInicioFin(telefono);
 	}
 
 	public String getCorreo() {

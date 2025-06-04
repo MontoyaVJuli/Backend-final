@@ -45,7 +45,7 @@ public class ProductoPedidoBusinessLogicImpl implements ProductoPedidoBusinessLo
 	public List<ProductoPedidoDomain> consultarProductosPedidos(ProductoPedidoDomain filtro) throws LilfacException {
 		
 		ProductoPedidoEntity productoPedidoFilter = ProductoPedidoEntityAssembler.getInstance().toEntity(filtro);
-		List<ProductoPedidoEntity> productoPedidoEntities = factory.getProductoPedidoDAO().listByFIlter(productoPedidoFilter);
+		List<ProductoPedidoEntity> productoPedidoEntities = factory.getProductoPedidoDAO().listByFilter(productoPedidoFilter);
 		return ProductoPedidoEntityAssembler.getInstance().toDomain(productoPedidoEntities);
 	}
 

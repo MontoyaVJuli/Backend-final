@@ -45,7 +45,7 @@ public class DepartamentoBusinessLogicImpl implements DepartamentoBusinessLogic 
 	public List<DepartamentoDomain> consultarDepartamentos(DepartamentoDomain filtro) throws LilfacException {
 		
 		var departamentoFilter = DepartamentoEntityAssembler.getInstance().toEntity(filtro); 
-		List<DepartamentoEntity> departamentoEntities = factory.getDepartamentoDAO().listByFIlter(departamentoFilter);
+		List<DepartamentoEntity> departamentoEntities = factory.getDepartamentoDAO().listByFilter(departamentoFilter);
 		return DepartamentoEntityAssembler.getInstance().toDomain(departamentoEntities);
 		
 	}

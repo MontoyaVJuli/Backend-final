@@ -54,7 +54,7 @@ public class HistorialCostoPostgreSQLDAO implements HistorialCostoDAO{
 	}
 
 	@Override
-	public List<HistorialCostoEntity> listByFIlter(HistorialCostoEntity filter) throws LilfacException {
+	public List<HistorialCostoEntity> listByFilter(HistorialCostoEntity filter) throws LilfacException {
 		var listaHistorialesCosto = new java.util.ArrayList<HistorialCostoEntity>();
 		var sentenciaSQL = new StringBuilder();
 		sentenciaSQL.append("SELECT H.id, H.codigo, H.fechaInicio, H.fechaFin, H.estado, H.costo, P.nombre AS nombre_producto FROM historialCosto H JOIN producto P ON H.producto = P.id WHERE 1=1");

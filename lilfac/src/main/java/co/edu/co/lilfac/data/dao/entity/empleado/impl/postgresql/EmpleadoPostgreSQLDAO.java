@@ -8,172 +8,222 @@ import java.util.UUID;
 
 import co.edu.co.lilfac.crosscutting.excepciones.DataLilfacException;
 import co.edu.co.lilfac.crosscutting.excepciones.LilfacException;
+import co.edu.co.lilfac.crosscutting.utilitarios.UtilObjeto;
+import co.edu.co.lilfac.crosscutting.utilitarios.UtilTexto;
 import co.edu.co.lilfac.crosscutting.utilitarios.UtilUUID;
 import co.edu.co.lilfac.data.dao.entity.empleado.EmpleadoDAO;
 import co.edu.co.lilfac.entity.EmpleadoEntity;
+import co.edu.co.lilfac.entity.CiudadEntity;
+import co.edu.co.lilfac.entity.EmpresaEntity;
 
-public class EmpleadoPostgreSQLDAO implements EmpleadoDAO{
-	
-	private Connection conexion;
-	
-	public EmpleadoPostgreSQLDAO(Connection conexion) {
-		this.conexion=conexion;
-	}
 
-	@Override
-	public void create(EmpleadoEntity entity) throws LilfacException {
-		var sentenciaSQL = new StringBuilder();
-		
-		sentenciaSQL.append("INSERT INTO empleado (id, nombre, apellido, cedula, telefono, correo) VALUES (?, ?, ?, ?, ?, ?)");
-		
-		try(var sentenciaPreparada = conexion.prepareStatement(sentenciaSQL.toString())){
-			
-			sentenciaPreparada.setObject(1, entity.getId());
-			sentenciaPreparada.setString(2, entity.getNombre());
-			sentenciaPreparada.setString(3, entity.getApellido());
-			sentenciaPreparada.setInt(4, entity.getCedula());
-			sentenciaPreparada.setInt(5, entity.getTelefono());
-			sentenciaPreparada.setString(6, entity.getCorreo());
-			sentenciaPreparada.executeUpdate();
-			
-		} catch (SQLException exception) {
-			var mensajeUsuario="Se ha presentado un problema tratando de registrar la información de un nuevo empleado";
-			var mensajeTecnico="Se presentó una excepción de tipo SQLexception tratando de hacer un INSERT en la tabla Empleado,  para tener más detalles revise el log de errores";
-			
-			throw DataLilfacException.reportar(mensajeUsuario, mensajeTecnico, exception);
-		}catch (Exception exception) {
-			var mensajeUsuario="Se ha presentado un problema INESPERADO tratando de registrar la información de un nuevo empleado";
-			var mensajeTecnico="Se presentó una excepción NO CONTROLADA de tipo Exception tratando de hacer un INSERT en la tabla Empleado";
-			
-			throw DataLilfacException.reportar(mensajeUsuario, mensajeTecnico, exception);
-		}
-		
-	}
+public class EmpleadoPostgreSQLDAO implements EmpleadoDAO {
 
-	@Override
-	public List<EmpleadoEntity> listByFIlter(EmpleadoEntity filter) throws LilfacException {
-		var listaEmpleados = new java.util.ArrayList<EmpleadoEntity>();
-		var sentenciaSQL = new StringBuilder();
-		sentenciaSQL.append("SELECT id, nombre, apellido, cedula, telefono, correo FROM empleado WHERE 1=1");
-		
-		if (filter != null) {
-			if (filter.getId() != null) {
-				sentenciaSQL.append(" AND id = ?");
-			}
-			if (filter.getNombre() != null && !filter.getNombre().isBlank()) {
-				sentenciaSQL.append(" AND nombre LIKE ?");
-			}
-			if (filter.getApellido() != null && !filter.getApellido().isBlank()) {
-				sentenciaSQL.append(" AND apellido LIKE ?");
-			}
-			if (filter.getCedula() != null) {
-				sentenciaSQL.append(" AND cedula = ?");
-			}
-			if (filter.getTelefono() != null) {
-				sentenciaSQL.append(" AND telefono = ?");
-			}
-			if (filter.getCorreo() != null && !filter.getCorreo().isBlank()) {
-				sentenciaSQL.append(" AND correo LIKE ?");
-			}
-		}
-		
-		try (var sentenciaPreparada = conexion.prepareStatement(sentenciaSQL.toString())) {
-			
-			var indiceParametro = 1;
-			
-			if (filter != null) {
-				if (filter.getId() != null) {
-					sentenciaPreparada.setObject(indiceParametro++, filter.getId());
-				}
-				if (filter.getNombre() != null && !filter.getNombre().isBlank()) {
-					sentenciaPreparada.setString(indiceParametro++, "%" + filter.getNombre() + "%");
-				}
-				if (filter.getApellido() != null && !filter.getApellido().isBlank()) {
-					sentenciaPreparada.setString(indiceParametro++, "%" + filter.getApellido() + "%");
-				}
-				if (filter.getCedula() != null) {
-					sentenciaPreparada.setInt(indiceParametro++, filter.getCedula());
-				}
-				if (filter.getTelefono() != null) {
-					sentenciaPreparada.setInt(indiceParametro++, filter.getTelefono());
-				}
-				if (filter.getCorreo() != null && !filter.getCorreo().isBlank()) {
-					sentenciaPreparada.setString(indiceParametro++, "%" + filter.getCorreo() + "%");
-				}
-			}
-			
-			try (var cursorResultados = sentenciaPreparada.executeQuery()) {
-				
-				while (cursorResultados.next()) {
-		            var empleado = new EmpleadoEntity();
-		            empleado.setId(UtilUUID.convertirAUUID(cursorResultados.getString("id")));
-		            empleado.setNombre(cursorResultados.getString("nombre"));
-		            empleado.setApellido(cursorResultados.getString("apellido"));
-		            empleado.setCedula(cursorResultados.getInt("cedula"));
-		            empleado.setTelefono(cursorResultados.getInt("telefono"));
-		            empleado.setCorreo(cursorResultados.getString("correo"));
+    private final Connection conexion;
 
-		            listaEmpleados.add(empleado);
-				}
-			}
-			
-		} catch (SQLException exception) {
-			var mensajeUsuario = "Se ha presentado un problema tratando de consultar los empleados con los filtros deseados.";
-			var mensajeTecnico = "Se presentó una excepción SQLException ejecutando SELECT con filtros en la tabla Empleado.";
+    public EmpleadoPostgreSQLDAO(Connection conexion) {
+        this.conexion = conexion;
+    }
 
-			throw DataLilfacException.reportar(mensajeUsuario, mensajeTecnico, exception);
-			
-		} catch (Exception exception) {
-			var mensajeUsuario = "Se ha presentado un problema inesperado tratando de consultar los empleados con los filtros deseados.";
-			var mensajeTecnico = "Se presentó una excepción NO CONTROLADA ejecutando SELECT con filtros en la tabla Empleado.";
+    
+    public void create(EmpleadoEntity entity) throws LilfacException {
+        var sentenciaSQL = new StringBuilder();
+        sentenciaSQL.append("INSERT INTO empleado (id, nombre, apellido, cedula, telefono, correo, direccionResidencia, ciudad, empresa) ")
+                    .append("VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
 
-			throw DataLilfacException.reportar(mensajeUsuario, mensajeTecnico, exception);
-		}
-		
-		return listaEmpleados;
-	}
+        try (var sentenciaPreparada = conexion.prepareStatement(sentenciaSQL.toString())) {
+            sentenciaPreparada.setObject(1, entity.getId());
+            sentenciaPreparada.setString(2, entity.getNombre());
+            sentenciaPreparada.setString(3, entity.getApellido());
+            sentenciaPreparada.setString(4, entity.getCedula());
+            sentenciaPreparada.setString(5, entity.getTelefono());
+            sentenciaPreparada.setString(6, entity.getCorreo());
+            sentenciaPreparada.setString(7, entity.getDireccionResidencia());
+            sentenciaPreparada.setObject(8, entity.getCiudad().getId());
+            sentenciaPreparada.setObject(9, entity.getEmpresa().getId());
 
-	@Override
-	public List<EmpleadoEntity> listAll() throws LilfacException {
-	    List<EmpleadoEntity> listaEmpleados = new ArrayList<>();
-	    var sentenciaSQL = new StringBuilder();
+            sentenciaPreparada.executeUpdate();
 
-	    sentenciaSQL.append("SELECT id, nombre, apellido, cedula, telefono, correo FROM empleado");
+        } catch (SQLException exception) {
+            var mensajeUsuario = "Se ha presentado un problema tratando de registrar la información de un nuevo empleado.";
+            var mensajeTecnico = "Error de SQL al intentar insertar un nuevo empleado.";
+            throw DataLilfacException.reportar(mensajeUsuario, mensajeTecnico, exception);
 
-	    try (var sentenciaPreparada = conexion.prepareStatement(sentenciaSQL.toString());
-	         var resultados = sentenciaPreparada.executeQuery()) {
+        } catch (Exception exception) {
+            var mensajeUsuario = "Se ha presentado un problema inesperado al registrar un nuevo empleado.";
+            var mensajeTecnico = "Error inesperado durante el registro de un nuevo empleado.";
+            throw DataLilfacException.reportar(mensajeUsuario, mensajeTecnico, exception);
+        }
+    }
 
-	        while (resultados.next()) {
-	            var empleado = new EmpleadoEntity();
-	            empleado.setId(UtilUUID.convertirAUUID(resultados.getString("id")));
-	            empleado.setNombre(resultados.getString("nombre"));
-	            empleado.setApellido(resultados.getString("apellido"));
-	            empleado.setCedula(resultados.getInt("cedula"));
-	            empleado.setTelefono(resultados.getInt("telefono"));
-	            empleado.setCorreo(resultados.getString("correo"));
+    
+    public List<EmpleadoEntity> listByFilter(EmpleadoEntity filter) throws LilfacException {
+        var listaEmpleados = new ArrayList<EmpleadoEntity>();
+        var sentenciaSQL = new StringBuilder();
+        sentenciaSQL.append("SELECT e.id, e.nombre, e.apellido, e.cedula, e.telefono, e.correo, ")
+                    .append("e.direccionResidencia, c.id AS ciudad_id, ")
+                    .append("em.id AS empresa_id ")
+                    .append("FROM empleado e ")
+                    .append("INNER JOIN ciudad c ON e.ciudad = c.id ")
+                    .append("INNER JOIN empresa em ON e.empresa = em.id ")
+                    .append("WHERE 1=1 ");
 
-	            listaEmpleados.add(empleado);
+        var parametros = new ArrayList<Object>();
+        
+        if (!UtilObjeto.getInstance().esNulo(filter)) {
+
+	        if (!UtilObjeto.getInstance().esNulo(filter.getId()) && !UtilUUID.esValorDefecto(filter.getId())) {
+	            sentenciaSQL.append("AND e.id = ? ");
+	            parametros.add(filter.getId());
 	        }
+	
+	        if (!UtilTexto.getInstance().estaVacia(filter.getNombre())) {
+	            sentenciaSQL.append("AND e.nombre ILIKE ? ");
+	            parametros.add("%" + filter.getNombre().trim() + "%");
+	        }
+	
+	        if (!UtilTexto.getInstance().estaVacia(filter.getApellido())) {
+	            sentenciaSQL.append("AND e.apellido ILIKE ? ");
+	            parametros.add("%" + filter.getApellido().trim() + "%");
+	        }
+	
+	        if (!UtilTexto.getInstance().estaVacia(filter.getCedula())) {
+	            sentenciaSQL.append("AND e.cedula = ? ");
+	            parametros.add(filter.getCedula().trim());
+	        }
+	
+	        if (!UtilTexto.getInstance().estaVacia(filter.getTelefono())) {
+	            sentenciaSQL.append("AND e.telefono = ? ");
+	            parametros.add(filter.getTelefono().trim());
+	        }
+	
+	        if (!UtilTexto.getInstance().estaVacia(filter.getCorreo())) {
+	            sentenciaSQL.append("AND e.correo ILIKE ? ");
+	            parametros.add("%" + filter.getCorreo().trim() + "%");
+	        }
+	
+	        if (!UtilTexto.getInstance().estaVacia(filter.getDireccionResidencia())) {
+	            sentenciaSQL.append("AND e.direccionResidencia ILIKE ? ");
+	            parametros.add("%" + filter.getDireccionResidencia().trim() + "%");
+	        }
+	
+	        if (!UtilObjeto.getInstance().esNulo(filter.getCiudad()) && !UtilUUID.esValorDefecto(filter.getCiudad().getId())) {
+	            sentenciaSQL.append("AND e.ciudad = ? ");
+	            parametros.add(filter.getCiudad().getId());
+	        }
+	
+	        if (!UtilObjeto.getInstance().esNulo(filter.getEmpresa()) && !UtilUUID.esValorDefecto(filter.getEmpresa().getId())){
+	            sentenciaSQL.append("AND e.empresa = ? ");
+	            parametros.add(filter.getEmpresa().getId());
+	        }
+	
+	        try (var sentenciaPreparada = conexion.prepareStatement(sentenciaSQL.toString())) {
+	            for (int i = 0; i < parametros.size(); i++) {
+	                sentenciaPreparada.setObject(i + 1, parametros.get(i));
+	            }
+	
+	            try (var cursor = sentenciaPreparada.executeQuery()) {
+	                while (cursor.next()) {
+	                    var empleado = new EmpleadoEntity();
+	                    empleado.setId(UtilUUID.convertirAUUID(cursor.getString("id")));
+	                    empleado.setNombre(cursor.getString("nombre"));
+	                    empleado.setApellido(cursor.getString("apellido"));
+	                    empleado.setCedula(cursor.getString("cedula"));
+	                    empleado.setTelefono(cursor.getString("telefono"));
+	                    empleado.setCorreo(cursor.getString("correo"));
+	                    empleado.setDireccionResidencia(cursor.getString("direccionResidencia"));
+	
+	                    var ciudad = new CiudadEntity();
+	                    ciudad.setId(UtilUUID.convertirAUUID(cursor.getString("ciudad_id")));
+	                    empleado.setCiudad(ciudad);
+	
+	                    var empresa = new EmpresaEntity();
+	                    empresa.setId(UtilUUID.convertirAUUID(cursor.getString("empresa_id")));
+	                    empleado.setEmpresa(empresa);
+	
+	                    listaEmpleados.add(empleado);
+	                }
+	            }
+	
+	        } catch (SQLException exception) {
+	            throw DataLilfacException.reportar(
+	                    "Se ha presentado un problema consultando empleados con filtro.",
+	                    "SQLException ejecutando SELECT en Empleado con filtros.",
+	                    exception
+	            );
+	        } catch (Exception exception) {
+	            throw DataLilfacException.reportar(
+	                    "Se ha presentado un problema inesperado consultando empleados.",
+	                    "Excepción no controlada ejecutando SELECT en Empleado con filtros.",
+	                    exception
+	            );
+	        }
+    	}
 
-	    } catch (SQLException exception) {
-	        var mensajeUsuario = "Se ha presentado un problema tratando de consultar la información de los empleados";
-	        var mensajeTecnico = "Se presentó una excepción de tipo SQLexception tratando de hacer un SELECT en la tabla Empleado";
-	        throw DataLilfacException.reportar(mensajeUsuario, mensajeTecnico, exception);
-	    } catch (Exception exception) {
-	        var mensajeUsuario = "Se ha presentado un problema INESPERADO tratando de consultar la información de los empleados";
-	        var mensajeTecnico = "Excepción NO CONTROLADA al hacer SELECT en la tabla Empleado";
-	        throw DataLilfacException.reportar(mensajeUsuario, mensajeTecnico, exception);
-	    }
+        return listaEmpleados;
+    }
 
-	    return listaEmpleados;
-	}
 
-	@Override
+    
+    public List<EmpleadoEntity> listAll() throws LilfacException {
+        List<EmpleadoEntity> listaEmpleados = new ArrayList<>();
+        var sentenciaSQL = new StringBuilder();
+        sentenciaSQL.append("SELECT e.id, e.nombre, e.apellido, e.cedula, e.telefono, e.correo, ")
+                    .append("e.direccionResidencia, c.id AS ciudad_id, ")
+                    .append("em.id AS empresa_id, em.nombre AS nombre_empresa ")
+                    .append("FROM empleado e ")
+                    .append("INNER JOIN ciudad c ON e.ciudad = c.id ")
+                    .append("INNER JOIN empresa em ON e.empresa = em.id");
+
+        try (var sentenciaPreparada = conexion.prepareStatement(sentenciaSQL.toString());
+             var resultados = sentenciaPreparada.executeQuery()) {
+
+            while (resultados.next()) {
+                var empleado = new EmpleadoEntity();
+                empleado.setId(UtilUUID.convertirAUUID(resultados.getString("id")));
+                empleado.setNombre(resultados.getString("nombre"));
+                empleado.setApellido(resultados.getString("apellido"));
+                empleado.setCedula(resultados.getString("cedula"));
+                empleado.setTelefono(resultados.getString("telefono"));
+                empleado.setCorreo(resultados.getString("correo"));
+                empleado.setDireccionResidencia(resultados.getString("direccionResidencia"));
+
+                var ciudad = new CiudadEntity();
+                ciudad.setId(UtilUUID.convertirAUUID(resultados.getString("ciudad_id")));
+                empleado.setCiudad(ciudad);
+
+                var empresa = new EmpresaEntity();
+                empresa.setId(UtilUUID.convertirAUUID(resultados.getString("empresa_id")));
+                empleado.setEmpresa(empresa);
+
+                listaEmpleados.add(empleado);
+            }
+
+        } catch (SQLException exception) {
+            throw DataLilfacException.reportar(
+                    "Se ha presentado un problema consultando todos los empleados.",
+                    "SQLException ejecutando SELECT ALL en Empleado.",
+                    exception
+            );
+        } catch (Exception exception) {
+            throw DataLilfacException.reportar(
+                    "Se ha presentado un problema inesperado consultando todos los empleados.",
+                    "Excepción no controlada ejecutando SELECT ALL en Empleado.",
+                    exception
+            );
+        }
+
+        return listaEmpleados;
+    }
+
+
+	
 	public EmpleadoEntity listById(UUID id) throws LilfacException {
 		var empleadoEntityRetorno=new EmpleadoEntity();
 		var sentenciaSQL = new StringBuilder();
 		
-		sentenciaSQL.append("SELECT id, nombre, apellido, cedula, telefono, correo FROM empleado WHERE id = ?");
+		sentenciaSQL.append("SELECT id, nombre, apellido, cedula, telefono, correo,")
+					.append("direccionResidencia, ciudad, empresa FROM empleado WHERE id = ?");
 		
 		try(var sentenciaPreparada = conexion.prepareStatement(sentenciaSQL.toString())){
 			
@@ -185,9 +235,19 @@ public class EmpleadoPostgreSQLDAO implements EmpleadoDAO{
 					empleadoEntityRetorno.setId(UtilUUID.convertirAUUID(cursorResultados.getString("id")));
 					empleadoEntityRetorno.setNombre(cursorResultados.getString("nombre"));
 					empleadoEntityRetorno.setApellido(cursorResultados.getString("apellido"));
-					empleadoEntityRetorno.setCedula(cursorResultados.getInt("cedula"));
-					empleadoEntityRetorno.setTelefono(cursorResultados.getInt("telefono"));
+					empleadoEntityRetorno.setCedula(cursorResultados.getString("cedula"));
+					empleadoEntityRetorno.setTelefono(cursorResultados.getString("telefono"));
 					empleadoEntityRetorno.setCorreo(cursorResultados.getString("correo"));
+					empleadoEntityRetorno.setDireccionResidencia(cursorResultados.getString("direccionResidencia"));
+
+		            var ciudad = new CiudadEntity();
+	                ciudad.setId(UtilUUID.convertirAUUID(cursorResultados.getString("ciudad")));
+
+		            empleadoEntityRetorno.setCiudad(ciudad);
+		            
+		            var empresa = new EmpresaEntity();
+	                empresa.setId(UtilUUID.convertirAUUID(cursorResultados.getString("empresa")));
+		            empleadoEntityRetorno.setEmpresa(empresa);
 				}
 				
 			}
@@ -207,20 +267,25 @@ public class EmpleadoPostgreSQLDAO implements EmpleadoDAO{
 		return empleadoEntityRetorno;
 	}
 
-	@Override
+	
 	public void update(UUID id, EmpleadoEntity entity) throws LilfacException {
 		var sentenciaSQL = new StringBuilder();
 		
-		sentenciaSQL.append("UPDATE empleado SET nombre = ?, apellido = ?, cedula = ?, telefono = ?, correo = ? WHERE id = ?");
+		sentenciaSQL.append("UPDATE empleado SET nombre = ?, apellido = ?, cedula = ?, telefono = ?, correo = ?, direccionResidencia = ?"
+							+ ", ciudad = ?, empresa = ? WHERE id = ?");
 		
 		try(var sentenciaPreparada = conexion.prepareStatement(sentenciaSQL.toString())){
 			
 			sentenciaPreparada.setString(1, entity.getNombre());
 			sentenciaPreparada.setString(2, entity.getApellido());
-			sentenciaPreparada.setInt(3, entity.getCedula());
-			sentenciaPreparada.setInt(4, entity.getTelefono());
+			sentenciaPreparada.setString(3, entity.getCedula());
+			sentenciaPreparada.setString(4, entity.getTelefono());
 			sentenciaPreparada.setString(5, entity.getCorreo());
-			sentenciaPreparada.setObject(6, id);
+			sentenciaPreparada.setString(6, entity.getDireccionResidencia());
+			sentenciaPreparada.setObject(7, entity.getCiudad().getId());
+			sentenciaPreparada.setObject(8, entity.getEmpresa().getId());
+			sentenciaPreparada.setObject(9, id);
+			
 			sentenciaPreparada.executeUpdate();
 			
 		} catch (SQLException exception) {
@@ -237,7 +302,7 @@ public class EmpleadoPostgreSQLDAO implements EmpleadoDAO{
 		
 	}
 
-	@Override
+	
 	public void delete(UUID id) throws LilfacException {
 		var sentenciaSQL = new StringBuilder();
 		
@@ -261,5 +326,6 @@ public class EmpleadoPostgreSQLDAO implements EmpleadoDAO{
 		}
 		
 	}
+
 
 }

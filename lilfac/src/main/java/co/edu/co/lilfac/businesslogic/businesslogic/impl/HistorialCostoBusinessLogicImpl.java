@@ -46,7 +46,7 @@ public class HistorialCostoBusinessLogicImpl implements HistorialCostoBusinessLo
 	public List<HistorialCostoDomain> consultarHistorialesCosto(HistorialCostoDomain filtro) throws LilfacException {
 		
 		var historialCostoFilter = HistorialCostoEntityAssembler.getInstance().toEntity(filtro);
-		List<HistorialCostoEntity> historialCostoEntities = factory.getHistorialCostoDAO().listByFIlter(historialCostoFilter);
+		List<HistorialCostoEntity> historialCostoEntities = factory.getHistorialCostoDAO().listByFilter(historialCostoFilter);
 		return HistorialCostoEntityAssembler.getInstance().toDomain(historialCostoEntities);
 	}
 

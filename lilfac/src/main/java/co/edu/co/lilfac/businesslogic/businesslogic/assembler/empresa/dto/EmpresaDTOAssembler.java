@@ -17,19 +17,19 @@ public class EmpresaDTOAssembler implements DTOAssembler<EmpresaDTO, EmpresaDoma
 		return INSTANCE;
 	}
 
-	@Override
+	
 	public EmpresaDTO toDto(final EmpresaDomain domain) {
 		return UtilObjeto.getInstance().esNulo(domain) ? EmpresaDTO.obtenerValorDefecto() : 
 			new EmpresaDTO(domain.getId(), domain.getNombre(),domain.getNit(), domain.getTelefono(), domain.getCorreo(), domain.getDireccion(), CiudadDTOAssembler.getInstance().toDto(domain.getCiudad()));
 	}
 
-	@Override
+	
 	public EmpresaDomain toDomain(final EmpresaDTO dto) {
 		var empresaDTOAEnsamblar = EmpresaDTO.obtenerValorDefecto(dto);
 		return new EmpresaDomain(empresaDTOAEnsamblar.getId(), empresaDTOAEnsamblar.getNombre(), empresaDTOAEnsamblar.getNit(), empresaDTOAEnsamblar.getTelefono(), empresaDTOAEnsamblar.getCorreo(), empresaDTOAEnsamblar.getDireccion(), CiudadDTOAssembler.getInstance().toDomain(empresaDTOAEnsamblar.getCiudad()));
 	}
 
-	@Override
+	
 	public List<EmpresaDomain> toDomain(List<EmpresaDTO> dtoList) {
 		var listaResultado = new ArrayList<EmpresaDomain>();
 		
@@ -39,13 +39,13 @@ public class EmpresaDTOAssembler implements DTOAssembler<EmpresaDTO, EmpresaDoma
 		return listaResultado;
 	}
 
-	@Override
+	
 	public List<EmpresaDTO> toDto(List<EmpresaDomain> domainList) {
 		var listaResultado = new ArrayList<EmpresaDTO>();
 		for (EmpresaDomain empresaDomain : domainList) {
 			listaResultado.add(toDto(empresaDomain));
 		}
-		return null;
+		return listaResultado;
 	}
 
 

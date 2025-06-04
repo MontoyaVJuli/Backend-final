@@ -46,7 +46,7 @@ public class RecepcionBusinessLogicImpl implements RecepcionBusinessLogic{
 	public List<RecepcionDomain> consultarRecepciones(RecepcionDomain filtro) throws LilfacException {
 		
 		RecepcionEntity recepcionFilter = RecepcionEntityAssembler.getInstance().toEntity(filtro);
-		List<RecepcionEntity> recepcionEntities = factory.getRecepcionDAO().listByFIlter(recepcionFilter);
+		List<RecepcionEntity> recepcionEntities = factory.getRecepcionDAO().listByFilter(recepcionFilter);
 		return RecepcionEntityAssembler.getInstance().toDomain(recepcionEntities);
 	}
 

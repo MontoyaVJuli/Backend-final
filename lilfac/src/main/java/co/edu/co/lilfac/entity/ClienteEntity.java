@@ -28,7 +28,9 @@ public class ClienteEntity {
 		setCiudad(CiudadEntity.obtenerValorDefecto());
 	}
 	
-	public ClienteEntity (final UUID id, final String nombre, final String apellido, final String cedula, final String telefono, final String correo, final String direccionResidencia, final CiudadEntity ciudad) {
+	public ClienteEntity (final UUID id, final String nombre, final String apellido,
+						  final String cedula, final String telefono, final String correo,
+						  final String direccionResidencia, final CiudadEntity ciudad) {
 		setId(id);
 		setNombre(nombre);
 		setApellido(apellido);

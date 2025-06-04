@@ -57,7 +57,7 @@ public class PedidoPostgreSQLDAO implements PedidoDAO{
 	}
 
 	@Override
-	public List<PedidoEntity> listByFIlter(PedidoEntity filter) throws LilfacException {
+	public List<PedidoEntity> listByFilter(PedidoEntity filter) throws LilfacException {
 		var listaPedidos = new java.util.ArrayList<PedidoEntity>();
 		var sentenciaSQL = new StringBuilder();
 		sentenciaSQL.append("SELECT P.id, P.fechaReserva, P.fechaVencimiento, P.direccionEntrega, P.costo, P.abono, P.restante, C.nombre AS nombre_ciudad, CL.nombre AS nombre_cliente, E.nombre AS nombre_empleado FROM pedido P JOIN ciudad C ON P.ciudad = C.id JOIN cliente CL ON P.cliente = CL.id JOIN empleado E ON P.empleado = E.id WHERE 1=1");

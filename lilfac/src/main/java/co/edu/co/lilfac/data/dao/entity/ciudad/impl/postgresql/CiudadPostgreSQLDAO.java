@@ -8,6 +8,8 @@ import java.util.UUID;
 
 import co.edu.co.lilfac.crosscutting.excepciones.DataLilfacException;
 import co.edu.co.lilfac.crosscutting.excepciones.LilfacException;
+import co.edu.co.lilfac.crosscutting.utilitarios.UtilObjeto;
+import co.edu.co.lilfac.crosscutting.utilitarios.UtilTexto;
 import co.edu.co.lilfac.crosscutting.utilitarios.UtilUUID;
 import co.edu.co.lilfac.data.dao.entity.ciudad.CiudadDAO;
 import co.edu.co.lilfac.entity.CiudadEntity;
@@ -21,7 +23,7 @@ public class CiudadPostgreSQLDAO implements CiudadDAO{
 		this.conexion=conexion;
 	}
 
-	@Override
+	
 	public void create(CiudadEntity entity) throws LilfacException {
 		var sentenciaSQL = new StringBuilder();
 		
@@ -48,78 +50,77 @@ public class CiudadPostgreSQLDAO implements CiudadDAO{
 		
 	}
 
-	@Override
-	public List<CiudadEntity> listByFIlter(CiudadEntity filter) throws LilfacException {
+	
+	public List<CiudadEntity> listByFilter(CiudadEntity filter) throws LilfacException {
 		var listaCiudades = new java.util.ArrayList<CiudadEntity>();
 		var sentenciaSQL = new StringBuilder();
-		sentenciaSQL.append("SELECT C.id, C.nombre, D.nombre AS nombre_departamento FROM ciudad C JOIN departamento D ON C.departamento = D.id WHERE 1=1");
+		sentenciaSQL.append("SELECT c.id, c.nombre FROM ciudad, d.id AS departamento_id ")
+				    .append(" JOIN departamento d ON c.departamento = d.id ")
+				    .append("WHERE 1=1");
 		
-		if (filter != null) {
-			if (filter.getId() != null) {
-				sentenciaSQL.append(" AND C.id = ?");
-			}
-			if (filter.getNombre() != null && !filter.getNombre().isBlank()) {
-				sentenciaSQL.append(" AND C.nombre LIKE ?");
-			}
-			if (filter.getDepartamento() != null) {
-				sentenciaSQL.append(" AND D.nombre = ?");
-			}
-		}
+
+		var parametros = new ArrayList<Object>();
 		
-		try (var sentenciaPreparada = conexion.prepareStatement(sentenciaSQL.toString())) {
-			
-			var indiceParametro = 1;
-			
-			if (filter != null) {
-				if (filter.getId() != null) {
-					sentenciaPreparada.setObject(indiceParametro++, filter.getId());
-				}
-				if (filter.getNombre() != null && !filter.getNombre().isBlank()) {
-					sentenciaPreparada.setString(indiceParametro++, "%" + filter.getNombre() + "%");
+        if (!UtilObjeto.getInstance().esNulo(filter)) {
 
-				}
-				if (filter.getDepartamento() != null) {
-					sentenciaPreparada.setObject(indiceParametro++, filter.getDepartamento().getNombre());
-				}
+	        if (!UtilObjeto.getInstance().esNulo(filter.getId()) && !UtilUUID.esValorDefecto(filter.getId())) {
+			    sentenciaSQL.append("AND c.id = ? ");
+			    parametros.add(filter.getId());
 			}
 			
-			try (var cursorResultados = sentenciaPreparada.executeQuery()) {
-				
-				while (cursorResultados.next()) {
-					var ciudad = new CiudadEntity();
-					ciudad.setId(UtilUUID.convertirAUUID(cursorResultados.getString("id")));
-					ciudad.setNombre(cursorResultados.getString("nombre"));
-					
-					var departamento = new DepartamentoEntity();
-		            departamento.setNombre(cursorResultados.getString("nombre_departamento"));
-		            ciudad.setDepartamento(departamento);
-					
-					listaCiudades.add(ciudad);
-				}
+			if (!UtilTexto.getInstance().estaVacia(filter.getNombre())) {
+			    sentenciaSQL.append("AND c.nombre ILIKE ? ");
+			    parametros.add("%" + filter.getNombre().trim() + "%");
 			}
 			
-		} catch (SQLException exception) {
-			var mensajeUsuario = "Se ha presentado un problema tratando de consultar las ciudades con los filtros deseados.";
-			var mensajeTecnico = "Se presentó una excepción SQLException ejecutando SELECT con filtros en la tabla Ciudad.";
-
-			throw DataLilfacException.reportar(mensajeUsuario, mensajeTecnico, exception);
+			if (!UtilObjeto.getInstance().esNulo(filter.getDepartamento()) && !UtilUUID.esValorDefecto(filter.getDepartamento().getId())) {
+			    sentenciaSQL.append("AND c.departamento = ? ");
+			    parametros.add(filter.getDepartamento().getId());
+			}
 			
-		} catch (Exception exception) {
-			var mensajeUsuario = "Se ha presentado un problema inesperado tratando de consultar las ciudades con los filtros deseados.";
-			var mensajeTecnico = "Se presentó una excepción NO CONTROLADA ejecutando SELECT con filtros en la tabla Ciudad.";
-
-			throw DataLilfacException.reportar(mensajeUsuario, mensajeTecnico, exception);
+			try (var sentenciaPreparada = conexion.prepareStatement(sentenciaSQL.toString())) {
+			    for (int i = 0; i < parametros.size(); i++) {
+			        sentenciaPreparada.setObject(i + 1, parametros.get(i));
+			    }
+			
+			    try (var cursor = sentenciaPreparada.executeQuery()) {
+			        while (cursor.next()) {
+			            var ciudad = new CiudadEntity();
+			            ciudad.setId(UtilUUID.convertirAUUID(cursor.getString("id")));
+			            ciudad.setNombre(cursor.getString("nombre"));
+			            
+			            var departamento = new DepartamentoEntity();
+			            departamento.setId(UtilUUID.convertirAUUID(cursor.getString("departamento_id")));
+			            ciudad.setDepartamento(departamento);
+			            
+			            listaCiudades.add(ciudad);	                    
+			        }	                  
+			    }
+			    
+			} catch (SQLException exception) {
+			    throw DataLilfacException.reportar(
+			            "Se ha presentado un problema consultando empleados con filtro.",
+			            "SQLException ejecutando SELECT en Empleado con filtros.",
+			            exception
+			    );
+			} catch (Exception exception) {
+			    throw DataLilfacException.reportar(
+			            "Se ha presentado un problema inesperado consultando empleados.",
+			            "Excepción no controlada ejecutando SELECT en Empleado con filtros.",
+			            exception
+			    );
+			}
 		}
 		
 		return listaCiudades;
 	}
 
-	@Override
+	
 	public List<CiudadEntity> listAll() throws LilfacException {
 	    List<CiudadEntity> listaCiudades = new ArrayList<>();
 	    var sentenciaSQL = new StringBuilder();
 
-	    sentenciaSQL.append("SELECT C.id, C.nombre, D.nombre AS nombre_departamento FROM ciudad C JOIN departamento D ON C.departamento = D.id");
+	    sentenciaSQL.append("SELECT C.id, C.nombre, D.id AS departamento_id FROM ciudad C JOIN departamento D ON C.departamento = D.id");
 
 	    try (var sentenciaPreparada = conexion.prepareStatement(sentenciaSQL.toString());
 	         var resultados = sentenciaPreparada.executeQuery()) {
@@ -130,7 +131,7 @@ public class CiudadPostgreSQLDAO implements CiudadDAO{
 	            ciudad.setNombre(resultados.getString("nombre"));
 
 	            var departamento = new DepartamentoEntity();
-	            departamento.setNombre(resultados.getString("nombre_departamento"));
+	            departamento.setId(UtilUUID.convertirAUUID(resultados.getString("departamento_id")));
 	            ciudad.setDepartamento(departamento);
 
 	            listaCiudades.add(ciudad);
@@ -149,12 +150,13 @@ public class CiudadPostgreSQLDAO implements CiudadDAO{
 	    return listaCiudades;
 	}
 
-	@Override
+	
 	public CiudadEntity listById(UUID id) throws LilfacException {
 		var ciudadEntityRetorno=new CiudadEntity();
 		var sentenciaSQL = new StringBuilder();
 		
-		sentenciaSQL.append("SELECT C.id, C.nombre, D.nombre AS nombre_departamento FROM ciudad C JOIN departamento D ON C.departamento = D.id WHERE C.id = ?");
+		sentenciaSQL.append("SELECT C.id, C.nombre, D.id AS departamento_id ")
+					.append("FROM ciudad C JOIN departamento D ON C.departamento = D.id WHERE C.id = ?");
 		
 		try(var sentenciaPreparada = conexion.prepareStatement(sentenciaSQL.toString())){
 			
@@ -165,9 +167,10 @@ public class CiudadPostgreSQLDAO implements CiudadDAO{
 				if (cursorResultados.next()) {
 					ciudadEntityRetorno.setId(UtilUUID.convertirAUUID(cursorResultados.getString("id")));
 					ciudadEntityRetorno.setNombre(cursorResultados.getString("nombre"));
+					
 					var departamento = new DepartamentoEntity();
-					departamento.setNombre(cursorResultados.getString("nombre_departamento"));
-					ciudadEntityRetorno.setDepartamento(departamento);
+					departamento.setId(UtilUUID.convertirAUUID(cursorResultados.getString("departamento_id")));	           
+	                ciudadEntityRetorno.setDepartamento(departamento);
 				}
 				
 			}
@@ -187,7 +190,7 @@ public class CiudadPostgreSQLDAO implements CiudadDAO{
 		return ciudadEntityRetorno;
 	}
 
-	@Override
+	
 	public void update(UUID id, CiudadEntity entity) throws LilfacException {
 		var sentenciaSQL = new StringBuilder();
 		
@@ -214,7 +217,7 @@ public class CiudadPostgreSQLDAO implements CiudadDAO{
 		
 	}
 
-	@Override
+	
 	public void delete(UUID id) throws LilfacException {
 		var sentenciaSQL = new StringBuilder();
 		

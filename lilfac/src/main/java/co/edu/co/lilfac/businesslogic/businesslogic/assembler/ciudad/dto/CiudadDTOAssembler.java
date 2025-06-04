@@ -17,19 +17,19 @@ public class CiudadDTOAssembler implements DTOAssembler<CiudadDTO, CiudadDomain>
 		return INSTANCE;
 	}
 
-	@Override
+	
 	public CiudadDTO toDto(final CiudadDomain domain) {
 		return UtilObjeto.getInstance().esNulo(domain) ? CiudadDTO.obtenerValorDefecto() : 
 			new CiudadDTO(domain.getId(), domain.getNombre(), DepartamentoDTOAssembler.getInstance().toDto(domain.getDepartamento()));
 	}
 
-	@Override
+	
 	public CiudadDomain toDomain(final CiudadDTO dto) {
 		var ciudadDTOAEnsamblar = CiudadDTO.obtenerValorDefecto(dto);
 		return new CiudadDomain(ciudadDTOAEnsamblar.getId(), ciudadDTOAEnsamblar.getNombre(), DepartamentoDTOAssembler.getInstance().toDomain(ciudadDTOAEnsamblar.getDepartamento()));
 	}
 
-	@Override
+	
 	public List<CiudadDomain> toDomain(List<CiudadDTO> dtoList) {
 		var listaResultado = new ArrayList<CiudadDomain>();
 		
@@ -39,14 +39,15 @@ public class CiudadDTOAssembler implements DTOAssembler<CiudadDTO, CiudadDomain>
 		return listaResultado;
 	}
 
-	@Override
+	
 	public List<CiudadDTO> toDto(List<CiudadDomain> domainList) {
 		var listaResultado = new ArrayList<CiudadDTO>();
 		
 		for (CiudadDomain ciudadDomain : domainList) {
 			listaResultado.add(toDto(ciudadDomain));
 		}
-		return null;
+		
+		return listaResultado;
 	}
 
 

@@ -17,19 +17,19 @@ public class ClienteEntityAssembler implements EntityAssembler<ClienteEntity, Cl
 		return INSTANCE;
 	}
 
-	@Override
+	
 	public ClienteEntity toEntity(final ClienteDomain domain) {
 		return UtilObjeto.getInstance().esNulo(domain) ? ClienteEntity.obtenerValorDefecto() : 
 			new ClienteEntity(domain.getId(), domain.getNombre(), domain.getApellido(), domain.getCedula(), domain.getTelefono(), domain.getCorreo(), domain.getDireccionResidencia(), CiudadEntityAssembler.getInstance().toEntity(domain.getCiudad()));
 	}
 
-	@Override
+	
 	public ClienteDomain toDomain(final ClienteEntity entity) {
 		var clienteEntityAEnsamblar = ClienteEntity.obtenerValorDefecto(entity);
 		return new ClienteDomain(clienteEntityAEnsamblar.getId(), clienteEntityAEnsamblar.getNombre(), clienteEntityAEnsamblar.getApellido(), clienteEntityAEnsamblar.getCedula(), clienteEntityAEnsamblar.getTelefono(), clienteEntityAEnsamblar.getCorreo(), clienteEntityAEnsamblar.getDireccionResidencia(), CiudadEntityAssembler.getInstance().toDomain(clienteEntityAEnsamblar.getCiudad()));
 	}
 
-	@Override
+	
 	public List<ClienteDomain> toDomain(List<ClienteEntity> entityList) {
 		var listaResultado = new ArrayList<ClienteDomain>();
 		

@@ -57,7 +57,7 @@ public class ClienteController {
 	@PostMapping
 	public ResponseEntity<String> crear(@RequestBody ClienteDTO cliente) throws LilfacException {
 		clienteFachada.registrarNuevoCliente(cliente);
-		var mensajeExito = "El cliente" + cliente.getNombre() + "se ha registrado correctamente";
+		var mensajeExito = "El cliente " + cliente.getNombre() + " se ha registrado correctamente";
 		return new ResponseEntity<>(mensajeExito, HttpStatus.OK);
 	}
 	
@@ -65,7 +65,7 @@ public class ClienteController {
 	public ResponseEntity<String> modificar(@PathVariable("id") UUID id, @RequestBody ClienteDTO cliente) throws LilfacException {
 		cliente.setId(id);
 		clienteFachada.modificarClienteExistente(id, cliente);
-		var mensajeExito = "El cliente" + cliente.getNombre() + "se ha modificado correctamente";
+		var mensajeExito = "El cliente " + cliente.getNombre() + " se ha modificado correctamente";
 		return new ResponseEntity<>(mensajeExito, HttpStatus.OK);
 	}
 	

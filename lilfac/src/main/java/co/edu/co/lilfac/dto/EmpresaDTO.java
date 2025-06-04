@@ -2,7 +2,6 @@ package co.edu.co.lilfac.dto;
 
 import java.util.UUID;
 
-import co.edu.co.lilfac.crosscutting.utilitarios.UtilNumerico;
 import co.edu.co.lilfac.crosscutting.utilitarios.UtilObjeto;
 import co.edu.co.lilfac.crosscutting.utilitarios.UtilTexto;
 import co.edu.co.lilfac.crosscutting.utilitarios.UtilUUID;
@@ -10,8 +9,8 @@ import co.edu.co.lilfac.crosscutting.utilitarios.UtilUUID;
 public final class EmpresaDTO {
 	private UUID id;
 	private String nombre;
-	private Integer nit;
-	private Integer telefono;
+	private String nit;
+	private String telefono;
 	private String correo;
 	private String direccion;
 	private CiudadDTO ciudad;
@@ -19,13 +18,13 @@ public final class EmpresaDTO {
 	public EmpresaDTO () {
 		setId(UtilUUID.obtenerValorDefecto());
 		setNombre(UtilTexto.getInstance().obtenerValorDefecto());
-		setNit(UtilNumerico.getInstance().obtenerValorDefecto());
-		setTelefono(UtilNumerico.getInstance().obtenerValorDefecto());
+		setNit(UtilTexto.getInstance().obtenerValorDefecto());
+		setTelefono(UtilTexto.getInstance().obtenerValorDefecto());
 		setCorreo(UtilTexto.getInstance().obtenerValorDefecto());
 		setCiudad(CiudadDTO.obtenerValorDefecto());
 	}
 	
-	public EmpresaDTO (final UUID id, final String nombre, final Integer nit, final Integer telefono, final String correo, final String direccion, final CiudadDTO ciudad) {
+	public EmpresaDTO (final UUID id, final String nombre, final String nit, final String telefono, final String correo, final String direccion, final CiudadDTO ciudad) {
 		setId(id);
 		setNombre(nombre);
 		setNit(nit);		
@@ -61,21 +60,21 @@ public final class EmpresaDTO {
 		return this;
 	}
 
-	public Integer getNit() {
+	public String getNit() {
 		return nit;
 	}
 
-	public EmpresaDTO setNit(final Integer nit) {
-		this.nit = UtilNumerico.obtenerValorDefecto(nit);
+	public EmpresaDTO setNit(final String nit) {
+		this.nit = UtilTexto.getInstance().quitarEspaciosBlancoInicioFin(nit);
 		return this;
 	}
 
-	public Integer getTelefono() {
+	public String getTelefono() {
 		return telefono;
 	}
 
-	public EmpresaDTO setTelefono(final Integer telefono) {
-		this.telefono =UtilNumerico.obtenerValorDefecto(telefono);
+	public EmpresaDTO setTelefono(final String telefono) {
+		this.telefono =UtilTexto.getInstance().quitarEspaciosBlancoInicioFin(telefono);
 		return this;
 	}
 

@@ -111,7 +111,7 @@ private DAOFactory factory;
 		var filtro = new CiudadEntity();
 		filtro.setNombre(UtilTexto.getInstance().quitarEspaciosBlancoInicioFin(nombreCiudad));
 		
-		var listaResultados = factory.getCiudadDAO().listByFIlter(filtro);
+		var listaResultados = factory.getCiudadDAO().listByFilter(filtro);
 		
 		if (listaResultados.isEmpty()) {
 		    throw BusinessLogicLilfacException.reportar("la ciudad no existe");
@@ -122,7 +122,7 @@ private DAOFactory factory;
 		var filtro = new DepartamentoEntity();
 		filtro.setNombre(UtilTexto.getInstance().quitarEspaciosBlancoInicioFin(nombreDepartamento));
 		
-		var listaResultados = factory.getDepartamentoDAO().listByFIlter(filtro);
+		var listaResultados = factory.getDepartamentoDAO().listByFilter(filtro);
 		
 		if (listaResultados.isEmpty()) {
 		    throw BusinessLogicLilfacException.reportar("la ciudad no existe");
@@ -132,7 +132,7 @@ private DAOFactory factory;
 	private void validarNoExisteClienteMismaCedula(String cedula) throws LilfacException {
 		var filtro = new ClienteEntity();
 		filtro.setCedula(cedula);
-		var listaResultados = factory.getClienteDAO().listByFIlter(filtro);
+		var listaResultados = factory.getClienteDAO().listByFilter(filtro);
 		if (!listaResultados.isEmpty()) {
 			throw BusinessLogicLilfacException.reportar("Ya existe un cliente con la cedula ingresada");
 		}
@@ -141,7 +141,7 @@ private DAOFactory factory;
 	private void validarClienteExistente(UUID id) throws LilfacException {
 		var filtro = new ClienteEntity();
 		filtro.setId(id);
-		var listaResultados = factory.getClienteDAO().listByFIlter(filtro);
+		var listaResultados = factory.getClienteDAO().listByFilter(filtro);
 		if (listaResultados.isEmpty()) {
 			throw BusinessLogicLilfacException.reportar("no existe un cliente con el id ingresado");
 		}
@@ -198,7 +198,7 @@ private DAOFactory factory;
 	public List<ClienteDomain> consultarClientes(ClienteDomain filtro) throws LilfacException {
 		
 		var clienteFilter = ClienteEntityAssembler.getInstance().toEntity(filtro);
-		List<ClienteEntity> clienteEntities = factory.getClienteDAO().listByFIlter(clienteFilter);
+		List<ClienteEntity> clienteEntities = factory.getClienteDAO().listByFilter(clienteFilter);
 		return ClienteEntityAssembler.getInstance().toDomain(clienteEntities);
 	}
 

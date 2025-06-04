@@ -59,7 +59,7 @@ public class FacturaPostgreSQLDAO implements FacturaDAO{
 	}
 
 	@Override
-	public List<FacturaEntity> listByFIlter(FacturaEntity filter) throws LilfacException {
+	public List<FacturaEntity> listByFilter(FacturaEntity filter) throws LilfacException {
 		var listaFacturas = new java.util.ArrayList<FacturaEntity>();
 		var sentenciaSQL = new StringBuilder();
 		sentenciaSQL.append("SELECT F.id, F.codigo, F.fechaGeneracion, F.costoTotal, E.nombre AS nombre_empresa, EM.nombre AS nombre_empleado, CL.nombre AS nombre_cliente, CA.valor AS costo_adicional, PE.id AS pedido FROM factura F JOIN empresa E ON F.empresa = E.id JOIN empleado EM ON F.empleado = EM.id JOIN cliente CL ON F.cliente = CL.id JOIN costoAdicional CA ON F.costoAdicional = CA.id JOIN pedido PE ON F.pedido = PE.id WHERE 1=1");

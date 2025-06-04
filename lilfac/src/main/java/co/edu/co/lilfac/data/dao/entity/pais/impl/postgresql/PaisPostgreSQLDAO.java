@@ -47,7 +47,7 @@ public class PaisPostgreSQLDAO implements PaisDAO{
 	}
 
 	@Override
-	public List<PaisEntity> listByFIlter(PaisEntity filter) throws LilfacException {
+	public List<PaisEntity> listByFilter(PaisEntity filter) throws LilfacException {
 		
 		var listaPaises = new java.util.ArrayList<PaisEntity>();
 		var sentenciaSQL = new StringBuilder();

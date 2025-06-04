@@ -45,7 +45,7 @@ public class FacturaBusinessLogicImpl implements FacturaBusinessLogic {
 	public List<FacturaDomain> consultarFacturas(FacturaDomain filtro) throws LilfacException {
 		
 		var facturaFilter = FacturaEntityAssembler.getInstance().toEntity(filtro);
-		List<FacturaEntity> facturaEntities = factory.getFacturaDAO().listByFIlter(facturaFilter);
+		List<FacturaEntity> facturaEntities = factory.getFacturaDAO().listByFilter(facturaFilter);
 		return FacturaEntityAssembler.getInstance().toDomain(facturaEntities);
 	}
 

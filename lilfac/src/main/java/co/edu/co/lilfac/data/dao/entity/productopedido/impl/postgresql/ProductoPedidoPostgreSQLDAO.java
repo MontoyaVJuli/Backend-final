@@ -50,7 +50,7 @@ public class ProductoPedidoPostgreSQLDAO implements ProductoPedidoDAO{
 	}
 
 	@Override
-	public List<ProductoPedidoEntity> listByFIlter(ProductoPedidoEntity filter) throws LilfacException {
+	public List<ProductoPedidoEntity> listByFilter(ProductoPedidoEntity filter) throws LilfacException {
 		var listaProductosPedidos = new java.util.ArrayList<ProductoPedidoEntity>();
 		var sentenciaSQL = new StringBuilder();
 		sentenciaSQL.append("SELECT PP.id, PP.cantidad, PR.nombre AS nombre_producto, PE.id AS pedido FROM productoPedido PP JOIN producto PR ON PP.producto = PR.id JOIN pedido PE ON PP.pedido = PE.id WHERE 1=1");

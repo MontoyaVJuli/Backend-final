@@ -6,7 +6,7 @@ import co.edu.co.lilfac.crosscutting.excepciones.LilfacException;
 
 public interface RetrieveDAO<E, ID> {
 	
-	List<E> listByFIlter(E filter)throws LilfacException;
+	List<E> listByFilter(E filter)throws LilfacException;
 	
 	List<E> listAll()throws LilfacException;
 	

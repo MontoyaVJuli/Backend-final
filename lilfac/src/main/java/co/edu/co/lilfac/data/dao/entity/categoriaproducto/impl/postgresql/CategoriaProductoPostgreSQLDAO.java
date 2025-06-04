@@ -49,7 +49,7 @@ public class CategoriaProductoPostgreSQLDAO implements CategoriaProductoDAO{
 	}
 
 	@Override
-	public List<CategoriaProductoEntity> listByFIlter(CategoriaProductoEntity filter) throws LilfacException {
+	public List<CategoriaProductoEntity> listByFilter(CategoriaProductoEntity filter) throws LilfacException {
 		var listaCategoriaProducto = new java.util.ArrayList<CategoriaProductoEntity>();
 		var sentenciaSQL = new StringBuilder();
 		sentenciaSQL.append("SELECT CP.id, P.nombre AS nombre_producto, C.nombre AS nombre_categoria FROM categoriaProducto CP JOIN producto P ON CP.producto = P.id JOIN categoria C ON CP.categoria = C.id WHERE 1=1");

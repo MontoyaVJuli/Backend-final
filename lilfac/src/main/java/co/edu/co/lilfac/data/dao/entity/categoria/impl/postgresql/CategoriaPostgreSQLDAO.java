@@ -49,7 +49,7 @@ public class CategoriaPostgreSQLDAO implements CategoriaDAO{
 
 
 	@Override
-	public List<CategoriaEntity> listByFIlter(CategoriaEntity filter) throws LilfacException {
+	public List<CategoriaEntity> listByFilter(CategoriaEntity filter) throws LilfacException {
 		var listaCategorias = new java.util.ArrayList<CategoriaEntity>();
 		var sentenciaSQL = new StringBuilder();
 		sentenciaSQL.append("SELECT id, nombre, descripcion FROM categoria WHERE 1=1");

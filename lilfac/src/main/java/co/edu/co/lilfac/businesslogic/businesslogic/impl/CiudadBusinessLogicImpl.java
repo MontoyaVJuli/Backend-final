@@ -45,7 +45,7 @@ public class CiudadBusinessLogicImpl implements CiudadBusinessLogic {
 	public List<CiudadDomain> consultarCiudades(CiudadDomain filtro) throws LilfacException {
 		
 		var ciudadFilter = CiudadEntityAssembler.getInstance().toEntity(filtro);
-		List<CiudadEntity> ciudadEntities = factory.getCiudadDAO().listByFIlter(ciudadFilter);
+		List<CiudadEntity> ciudadEntities = factory.getCiudadDAO().listByFilter(ciudadFilter);
 		return CiudadEntityAssembler.getInstance().toDomain(ciudadEntities);
 	}
 

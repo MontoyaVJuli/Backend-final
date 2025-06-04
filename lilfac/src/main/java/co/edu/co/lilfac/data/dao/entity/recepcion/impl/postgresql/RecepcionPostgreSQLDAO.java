@@ -55,7 +55,7 @@ public class RecepcionPostgreSQLDAO implements RecepcionDAO{
 	}
 
 	@Override
-	public List<RecepcionEntity> listByFIlter(RecepcionEntity filter) throws LilfacException {
+	public List<RecepcionEntity> listByFilter(RecepcionEntity filter) throws LilfacException {
 		var listaRecepciones = new java.util.ArrayList<RecepcionEntity>();
 		var sentenciaSQL = new StringBuilder();
 		sentenciaSQL.append("SELECT R.id, E.id AS entrega, R.fecha, R.estado, R.direccion, C.nombre AS nombre_ciudad, EM.nombre AS nombre_empleado FROM recepcion R JOIN entrega E ON R.entrega = E.id JOIN ciudad C ON R.ciudad = C.id JOIN empleado EM ON R.empleado = EM.id WHERE 1=1");

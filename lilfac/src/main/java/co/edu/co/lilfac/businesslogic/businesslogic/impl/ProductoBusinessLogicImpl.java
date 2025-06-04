@@ -45,7 +45,7 @@ public class ProductoBusinessLogicImpl implements ProductoBusinessLogic {
 	public List<ProductoDomain> consultarProductos(ProductoDomain filtro) throws LilfacException {
 		
 		ProductoEntity productoFilter = ProductoEntityAssembler.getInstance().toEntity(filtro); // MAGIA DE TRADUCIR DE domain-›entity 
-		List<ProductoEntity> productoEntities = factory.getProductoDAO().listByFIlter(productoFilter);
+		List<ProductoEntity> productoEntities = factory.getProductoDAO().listByFilter(productoFilter);
 		return ProductoEntityAssembler.getInstance().toDomain(productoEntities);
 	}
 

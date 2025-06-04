@@ -45,7 +45,7 @@ public class CostoAdicionalBusinessLogicImpl implements CostoAdicionalBusinessLo
 	public List<CostoAdicionalDomain> consultarCostosAdicionales(CostoAdicionalDomain filtro) throws LilfacException {
 		
 		var costoAdicionalFilter = CostoAdicionalEntityAssembler.getInstance().toEntity(filtro);
-		List<CostoAdicionalEntity> costoAdicionalEntities = factory.getCostoAdicionalDAO().listByFIlter(costoAdicionalFilter);
+		List<CostoAdicionalEntity> costoAdicionalEntities = factory.getCostoAdicionalDAO().listByFilter(costoAdicionalFilter);
 		return CostoAdicionalEntityAssembler.getInstance().toDomain(costoAdicionalEntities);
 	}
 

@@ -38,7 +38,10 @@ public class ClienteDTO {
 		setCiudad(CiudadDTO.obtenerValorDefecto());
 	}
 	
-	public ClienteDTO (final UUID id, final String nombre, final String apellido, final String cedula, final String telefono, final String correo, final String direccionResidencia, final CiudadDTO ciudad) {
+	public ClienteDTO (final UUID id, final String nombre, final String apellido, final String cedula, 
+						final String telefono, final String correo, final String direccionResidencia, 
+						final CiudadDTO ciudad) {
+		
 		setId(id);
 		setNombre(nombre);
 		setApellido(apellido);

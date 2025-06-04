@@ -14,11 +14,13 @@ public final class UtilObjeto {
 		return instancia;
 	}
 	
-	public <O> boolean esNulo(final O objeto) {
+	public  <O> boolean esNulo(final O objeto) {
 		return objeto == null;
 	}
+
 	
-	public <O> O obtenerValorDefecto(final O valorOriginal, final O valorDefecto) {
-		return esNulo(valorOriginal) ? valorDefecto:valorOriginal;
-		}
+	public  <O> O obtenerValorDefecto(final O valorOriginal, final O valorDefecto) {
+		return esNulo(valorOriginal) ? valorDefecto : valorOriginal;
 	}
+
+}
