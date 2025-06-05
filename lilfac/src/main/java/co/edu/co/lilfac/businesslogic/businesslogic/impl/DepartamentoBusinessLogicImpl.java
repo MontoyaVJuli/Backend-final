@@ -42,7 +42,7 @@ public class DepartamentoBusinessLogicImpl implements DepartamentoBusinessLogic 
 	}
 
 	@Override
-	public List<DepartamentoDomain> consultarDepartamentos(DepartamentoDomain filtro) throws LilfacException {
+	public List<DepartamentoDomain> consultarDepartamentosFiltro(DepartamentoDomain filtro) throws LilfacException {
 		
 		var departamentoFilter = DepartamentoEntityAssembler.getInstance().toEntity(filtro); 
 		List<DepartamentoEntity> departamentoEntities = factory.getDepartamentoDAO().listByFilter(departamentoFilter);
@@ -50,4 +50,9 @@ public class DepartamentoBusinessLogicImpl implements DepartamentoBusinessLogic 
 		
 	}
 
+	@Override
+	public List<DepartamentoDomain> consultarDepartamentos() throws LilfacException {
+		List<DepartamentoEntity> listaDepartamentosEntity = factory.getDepartamentoDAO().listAll();
+		return DepartamentoEntityAssembler.getInstance().toDomain(listaDepartamentosEntity);
+	}
 }

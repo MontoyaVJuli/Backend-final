@@ -12,6 +12,7 @@ public interface DepartamentoFacade {
 	void modificarDepartamentoExistente(UUID id, DepartamentoDTO departamento)throws LilfacException;
 	void darBajaDefinitivamenteDepartamentoExistente(UUID id)throws LilfacException;
 	DepartamentoDTO consultarDepartamentoPorId(UUID id)throws LilfacException;
-	List<DepartamentoDTO> consultarDepartamentos(DepartamentoDTO filtro)throws LilfacException;
+	List<DepartamentoDTO> consultarDepartamentosFiltro(DepartamentoDTO filtro)throws LilfacException;
+	List<DepartamentoDTO>consultarDepartamentos()throws LilfacException;
 
 }

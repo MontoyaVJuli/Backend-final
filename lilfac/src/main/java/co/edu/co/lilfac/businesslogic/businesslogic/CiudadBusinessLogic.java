@@ -12,6 +12,7 @@ public interface CiudadBusinessLogic {
 	void modificarCiudadExistente(UUID id, CiudadDomain ciudad)throws LilfacException;
 	void darBajaDefinitivamenteCiudadExistente(UUID id)throws LilfacException;
 	CiudadDomain consultarCiudadPorId(UUID id)throws LilfacException;
-	List<CiudadDomain> consultarCiudades(CiudadDomain filtro)throws LilfacException;
+	List<CiudadDomain> consultarCiudadesFiltro(CiudadDomain filtro)throws LilfacException;
+	List<CiudadDomain>consultarCiudades()throws LilfacException;
 
 }

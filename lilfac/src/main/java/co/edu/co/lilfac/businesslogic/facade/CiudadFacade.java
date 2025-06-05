@@ -12,6 +12,6 @@ public interface CiudadFacade {
 	void modificarCiudadExistente(UUID id, CiudadDTO ciudad)throws LilfacException;
 	void darBajaDefinitivamenteCiudadExistente(UUID id)throws LilfacException;
 	CiudadDTO consultarCiudadPorId(UUID id)throws LilfacException;
-	List<CiudadDTO> consultarCiudades(CiudadDTO filtro)throws LilfacException;
-
+	List<CiudadDTO> consultarCiudadesFiltro(CiudadDTO filtro)throws LilfacException;
+	List<CiudadDTO>consultarCiudades()throws LilfacException;
 }

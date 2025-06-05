@@ -1,5 +1,6 @@
 package co.edu.co.lilfac.businesslogic.facade.impl;
 
+import java.util.List;
 import java.util.UUID;
 
 import co.edu.co.lilfac.businesslogic.businesslogic.EmpresaBusinessLogic;
@@ -81,5 +82,25 @@ public class EmpresaFacadeImpl implements EmpresaFacade{
 			daoFactory.cerrarConexion();
 		}
 
+	}
+
+	@Override
+	public List<EmpresaDTO> consultarEmpresas() throws LilfacException {
+		try{
+			daoFactory.abrirConexion();
+			List<EmpresaDomain> empresaDomain = empresaBusinessLogic.consultarEmpresas();
+			return EmpresaDTOAssembler.getInstance().toDto(empresaDomain);
+		}catch(LilfacException exception) {
+			daoFactory.cancelarTransaccion();
+			throw exception;
+		} catch (Exception exception) {
+			var mensajeUsuario="Se ha presentado un problema INESPERADO tratando de consultar la información de las empresas";
+			var mensajeTecnico="Se presentó una excepción NO CONTROLADA de tipo Exception tratando de consultar la informacion de las empresas";
+			
+			throw BusinessLogicLilfacException.reportar(mensajeUsuario, mensajeTecnico, exception);
+		}finally {
+			daoFactory.cerrarConexion();
+		}
+		
 	}
 }

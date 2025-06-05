@@ -160,6 +160,7 @@ public class EmpresaPostgreSQLDAO implements EmpresaDAO{
 	        while (resultados.next()) {
 	            var empresa = new EmpresaEntity();
 	            empresa.setId(UtilUUID.convertirAUUID(resultados.getString("id")));
+	            empresa.setNombre(resultados.getString("nombre"));
 	            empresa.setNit(resultados.getString("nit"));
 	            empresa.setTelefono(resultados.getString("telefono"));
 	            empresa.setCorreo(resultados.getString("correo"));

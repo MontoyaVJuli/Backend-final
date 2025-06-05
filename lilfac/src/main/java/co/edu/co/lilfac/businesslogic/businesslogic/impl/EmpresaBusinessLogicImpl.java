@@ -1,5 +1,6 @@
 package co.edu.co.lilfac.businesslogic.businesslogic.impl;
 
+import java.util.List;
 import java.util.UUID;
 
 import co.edu.co.lilfac.businesslogic.businesslogic.EmpresaBusinessLogic;
@@ -7,6 +8,7 @@ import co.edu.co.lilfac.businesslogic.businesslogic.assembler.empresa.entity.Emp
 import co.edu.co.lilfac.businesslogic.businesslogic.domain.EmpresaDomain;
 import co.edu.co.lilfac.crosscutting.excepciones.LilfacException;
 import co.edu.co.lilfac.data.dao.factory.DAOFactory;
+import co.edu.co.lilfac.entity.EmpresaEntity;
 
 public class EmpresaBusinessLogicImpl implements EmpresaBusinessLogic {
 	
@@ -34,5 +36,9 @@ public class EmpresaBusinessLogicImpl implements EmpresaBusinessLogic {
 		return EmpresaEntityAssembler.getInstance().toDomain(empresaEntity);
 	}
 
-
+	@Override
+	public List<EmpresaDomain> consultarEmpresas() throws LilfacException {
+		List<EmpresaEntity> empresasEntities = factory.getEmpresaDAO().listAll();
+		return EmpresaEntityAssembler.getInstance().toDomain(empresasEntities);
+	}
 }

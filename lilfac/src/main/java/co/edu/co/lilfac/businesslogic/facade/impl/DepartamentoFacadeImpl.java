@@ -103,10 +103,10 @@ public class DepartamentoFacadeImpl implements DepartamentoFacade{
 	}
 
 	@Override
-	public List<DepartamentoDTO> consultarDepartamentos(DepartamentoDTO filtro) throws LilfacException {
+	public List<DepartamentoDTO> consultarDepartamentosFiltro(DepartamentoDTO filtro) throws LilfacException {
 		try {
 			var departamentoFilter = DepartamentoDTOAssembler.getInstance().toDomain(filtro);
-			List<DepartamentoDomain> departamentosDomain = departamentoBusinessLogic.consultarDepartamentos(departamentoFilter);
+			List<DepartamentoDomain> departamentosDomain = departamentoBusinessLogic.consultarDepartamentosFiltro(departamentoFilter);
 			return DepartamentoDTOAssembler.getInstance().toDto(departamentosDomain);
 		} catch (LilfacException exception) {
 			daoFactory.cancelarTransaccion();
@@ -116,6 +116,26 @@ public class DepartamentoFacadeImpl implements DepartamentoFacade{
 			var mensajeTecnico="Se presentó una excepción NO CONTROLADA de tipo Exception tratando de consultar la informacion de los departamentos";
 			
 			throw BusinessLogicLilfacException.reportar(mensajeUsuario, mensajeTecnico, exception);
+		}
+	}
+
+
+	@Override
+	public List<DepartamentoDTO> consultarDepartamentos() throws LilfacException {
+		try {
+			daoFactory.abrirConexion();
+			List<DepartamentoDomain> listaDepartamentosDomain = departamentoBusinessLogic.consultarDepartamentos();
+			return DepartamentoDTOAssembler.getInstance().toDto(listaDepartamentosDomain);
+		}  catch (LilfacException exception) {
+			daoFactory.cancelarTransaccion();
+			throw exception;
+		} catch (Exception exception) {
+			var mensajeUsuario="Se ha presentado un problema INESPERADO tratando de consultar la información de los departamentos";
+			var mensajeTecnico="Se presentó una excepción NO CONTROLADA de tipo Exception tratando de consultar la informacion de los departamentos";
+			
+			throw BusinessLogicLilfacException.reportar(mensajeUsuario, mensajeTecnico, exception);
+		}finally {
+			daoFactory.cerrarConexion();
 		}
 	}
 

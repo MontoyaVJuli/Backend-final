@@ -12,6 +12,7 @@ public interface DepartamentoBusinessLogic {
 	void modificarDepartamentoExistente(UUID id, DepartamentoDomain departamento)throws LilfacException;
 	void darBajaDefinitivamenteDepartamentoExistente(UUID id)throws LilfacException;
 	DepartamentoDomain consultarDepartamentoPorId(UUID id)throws LilfacException;
-	List<DepartamentoDomain> consultarDepartamentos(DepartamentoDomain filtro)throws LilfacException;
+	List<DepartamentoDomain> consultarDepartamentosFiltro(DepartamentoDomain filtro)throws LilfacException;
+	List<DepartamentoDomain>consultarDepartamentos()throws LilfacException;
 
 }

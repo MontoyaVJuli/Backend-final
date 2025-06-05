@@ -42,10 +42,16 @@ public class CiudadBusinessLogicImpl implements CiudadBusinessLogic {
 	}
 
 	@Override
-	public List<CiudadDomain> consultarCiudades(CiudadDomain filtro) throws LilfacException {
+	public List<CiudadDomain> consultarCiudadesFiltro(CiudadDomain filtro) throws LilfacException {
 		
 		var ciudadFilter = CiudadEntityAssembler.getInstance().toEntity(filtro);
 		List<CiudadEntity> ciudadEntities = factory.getCiudadDAO().listByFilter(ciudadFilter);
+		return CiudadEntityAssembler.getInstance().toDomain(ciudadEntities);
+	}
+
+	@Override
+	public List<CiudadDomain> consultarCiudades() throws LilfacException {
+		List<CiudadEntity> ciudadEntities = factory.getCiudadDAO().listAll();
 		return CiudadEntityAssembler.getInstance().toDomain(ciudadEntities);
 	}
 

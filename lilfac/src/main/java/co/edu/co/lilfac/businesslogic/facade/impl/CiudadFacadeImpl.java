@@ -104,10 +104,10 @@ public class CiudadFacadeImpl implements CiudadFacade {
 	}
 
 	@Override
-	public List<CiudadDTO> consultarCiudades(CiudadDTO filtro) throws LilfacException {
+	public List<CiudadDTO> consultarCiudadesFiltro(CiudadDTO filtro) throws LilfacException {
 		try {
 			var ciudadFilter = CiudadDTOAssembler.getInstance().toDomain(filtro);
-			List<CiudadDomain> ciudadesDomain = ciudadBusinessLogic.consultarCiudades(ciudadFilter);
+			List<CiudadDomain> ciudadesDomain = ciudadBusinessLogic.consultarCiudadesFiltro(ciudadFilter);
 			return CiudadDTOAssembler.getInstance().toDto(ciudadesDomain);
 		} catch (LilfacException exception) {
 			daoFactory.cancelarTransaccion();
@@ -117,6 +117,25 @@ public class CiudadFacadeImpl implements CiudadFacade {
 			var mensajeTecnico="Se presentó una excepción NO CONTROLADA de tipo Exception tratando de consultar la informacion de las ciudades";
 			
 			throw BusinessLogicLilfacException.reportar(mensajeUsuario, mensajeTecnico, exception);
+		}
+	}
+
+	@Override
+	public List<CiudadDTO> consultarCiudades() throws LilfacException {
+		try {
+			daoFactory.abrirConexion();
+			List<CiudadDomain> ciudadesDomain = ciudadBusinessLogic.consultarCiudades();
+			return CiudadDTOAssembler.getInstance().toDto(ciudadesDomain);
+		} catch (LilfacException exception) {
+			daoFactory.cancelarTransaccion();
+			throw exception;
+		} catch (Exception exception) {
+			var mensajeUsuario="Se ha presentado un problema INESPERADO tratando de consultar la información de las ciudades";
+			var mensajeTecnico="Se presentó una excepción NO CONTROLADA de tipo Exception tratando de consultar la informacion de las ciudades";
+			
+			throw BusinessLogicLilfacException.reportar(mensajeUsuario, mensajeTecnico, exception);
+		}finally {
+			daoFactory.cerrarConexion();
 		}
 	}
 
